@@ -77,6 +77,13 @@ $copied = copyDir($extractDir, __DIR__, $exclude);
 rrmdir($tmpDir);
 
 catatAktivitas($conn, "Memperbarui sistem dari GitHub", "update");
+
+$versiLama = getPengaturan($conn, 'versi');
+$parts = explode('.', $versiLama ?: '1.0');
+$parts[count($parts)-1] = (int) ($parts[count($parts)-1]) + 1;
+$versiBaru = implode('.', $parts);
+mysqli_query($conn, "UPDATE pengaturan SET nilai='$versiBaru' WHERE nama_pengaturan='versi'");
+
 echo json_encode(['success' => true, 'message' => "Sistem berhasil diperbarui! ($copied file diupdate)"]);
 
 // Helper functions
