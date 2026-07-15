@@ -244,5 +244,38 @@ function toggleSidebar() {
     document.getElementById('sidebar').classList.toggle('-translate-x-full');
     document.getElementById('sidebarOverlay').classList.toggle('hidden');
 }
+
+// Update Sistem
+function updateSistem() {
+    Swal.fire({
+        title: 'Update Sistem?',
+        text: 'Sistem akan diperbarui dari repository GitHub. Proses ini membutuhkan koneksi internet.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#7c3aed',
+        confirmButtonText: 'Ya, Update!',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire({
+                title: 'Memperbarui...',
+                text: 'Mohon tunggu, sistem sedang diperbarui.',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
+            fetch('../update_sistem.php')
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({ icon: 'success', title: 'Berhasil!', text: data.message, confirmButtonColor: '#7c3aed' })
+                            .then(() => location.reload());
+                    } else {
+                        Swal.fire({ icon: 'error', title: 'Gagal', text: data.message, confirmButtonColor: '#7c3aed' });
+                    }
+                })
+                .catch(() => Swal.fire({ icon: 'error', title: 'Error', text: 'Terjadi kesalahan koneksi.', confirmButtonColor: '#7c3aed' }));
+        }
+    });
+}
 </script>
     <!-- ====== SIDEBAR ====== -->
