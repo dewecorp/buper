@@ -6,7 +6,7 @@ $title = "Data Fasilitas";
 include __DIR__ . '/header.php';
 include __DIR__ . '/sidebar.php';
 
-$q = mysqli_query($conn, "SELECT * FROM fasilitas ORDER BY id ASC");
+$q = mysqli_query($conn, "SELECT * FROM fasilitas ORDER BY nama_fasilitas ASC");
 $daftar = [];
 while ($row = mysqli_fetch_assoc($q)) $daftar[] = $row;
 ?>

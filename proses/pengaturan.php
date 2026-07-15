@@ -8,18 +8,22 @@ requireCSRF();
 $action = $_POST['action'] ?? '';
 
 if ($action === 'edit') {
-    // Handle logo upload
-    if (!empty($_FILES['logo_file']['name']) && $_FILES['logo_file']['error'] === UPLOAD_ERR_OK) {
-        $error = validateImage($_FILES['logo_file'], 2 * 1024 * 1024);
-        if ($error) {
-            jsonResponse(false, $error);
-        }
-        $path = saveUploadedImage($_FILES['logo_file'], 'logo');
-        if ($path) {
-            $stmt = mysqli_prepare($conn, "UPDATE pengaturan SET nilai=? WHERE nama_pengaturan='logo'");
-            mysqli_stmt_bind_param($stmt, 's', $path);
-            mysqli_stmt_execute($stmt);
-            mysqli_stmt_close($stmt);
+    $logoFields = [
+        'logo_file'       => 'logo',
+        'logo_pramuka_file' => 'logo_pramuka',
+        'logo_wosm_file'    => 'logo_wosm',
+    ];
+    foreach ($logoFields as $inputName => $dbName) {
+        if (!empty($_FILES[$inputName]['name']) && $_FILES[$inputName]['error'] === UPLOAD_ERR_OK) {
+            $error = validateImage($_FILES[$inputName], 2 * 1024 * 1024);
+            if ($error) jsonResponse(false, $error);
+            $path = saveUploadedImage($_FILES[$inputName], $dbName);
+            if ($path) {
+                $stmt = mysqli_prepare($conn, "UPDATE pengaturan SET nilai=? WHERE nama_pengaturan=?");
+                mysqli_stmt_bind_param($stmt, 'ss', $path, $dbName);
+                mysqli_stmt_execute($stmt);
+                mysqli_stmt_close($stmt);
+            }
         }
     }
 

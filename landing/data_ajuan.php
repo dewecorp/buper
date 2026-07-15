@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../config/koneksi.php';
 $profil = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM profil WHERE id = 1"));
 $logoAjuan = getPengaturan($conn, 'logo');
+$namaWebAjuan = getPengaturan($conn, 'nama_website') ?: 'Buper Jepara';
 
 $search = trim($_GET['cari'] ?? '');
 $s = mysqli_real_escape_string($conn, $search);
@@ -18,7 +19,7 @@ while ($row = mysqli_fetch_assoc($q)) $izin_list[] = $row;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Ajuan - Buper Jepara</title>
+    <title><?= e($namaWebAjuan) ?> | Data Ajuan</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {

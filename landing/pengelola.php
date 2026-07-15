@@ -4,18 +4,18 @@ require_once __DIR__ . '/../config/koneksi.php';
 $q = mysqli_query($conn, "SELECT * FROM profil WHERE id = 1");
 $profil = mysqli_fetch_assoc($q);
 
-$q_biaya = mysqli_query($conn, "SELECT * FROM biaya ORDER BY id ASC");
-$biaya_list = [];
-while ($row = mysqli_fetch_assoc($q_biaya)) $biaya_list[] = $row;
-$logoBiaya = getPengaturan($conn, 'logo');
-$namaWebBiaya = getPengaturan($conn, 'nama_website') ?: 'Buper Jepara';
+$q_pengelola = mysqli_query($conn, "SELECT * FROM pengelola WHERE status='aktif' ORDER BY urutan ASC");
+$pengelola_list = [];
+while ($row = mysqli_fetch_assoc($q_pengelola)) $pengelola_list[] = $row;
+$logoPengelola = getPengaturan($conn, 'logo');
+$namaWebPengelola = getPengaturan($conn, 'nama_website') ?: 'Buper Jepara';
 ?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= e($namaWebBiaya) ?> | Biaya Penggunaan</title>
+    <title><?= e($namaWebPengelola) ?> | Pengelola</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -30,8 +30,8 @@ $namaWebBiaya = getPengaturan($conn, 'nama_website') ?: 'Buper Jepara';
             }
         }
     </script>
-    <?php if (!empty($logoBiaya)): ?>
-    <link rel="icon" href="../<?= e($logoBiaya) ?>">
+    <?php if (!empty($logoPengelola)): ?>
+    <link rel="icon" href="../<?= e($logoPengelola) ?>">
     <?php endif; ?>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 </head>
@@ -41,31 +41,31 @@ $namaWebBiaya = getPengaturan($conn, 'nama_website') ?: 'Buper Jepara';
 <section class="py-16">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
-            <h1 class="text-3xl font-bold text-brown-800 mb-2">Biaya Penggunaan Buper</h1>
+            <h1 class="text-3xl font-bold text-brown-800 mb-2">Susunan Pengelola</h1>
             <div class="w-20 h-1 bg-gradient-to-r from-brown-700 to-emerald-500 mx-auto rounded"></div>
-            <p class="text-gray-600 mt-4">Berikut adalah daftar biaya penggunaan Bumi Perkemahan.</p>
+            <p class="text-gray-600 mt-4">Seluruh pengelola Bumi Perkemahan Kwartir Cabang Jepara.</p>
         </div>
 
-        <div class="space-y-4">
-            <?php foreach ($biaya_list as $i => $b): ?>
-            <div class="bg-white rounded-2xl shadow-md border border-gray-200 p-6 hover:shadow-lg transition">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div class="flex-1">
-                        <h3 class="text-xl font-bold text-brown-800 mb-1"><?= e($b['nama_biaya']) ?></h3>
-                        <p class="text-gray-600 text-sm mb-2"><?= e($b['deskripsi']) ?></p>
-                        <p class="text-xs text-gray-500"><i class="bi bi-info-circle mr-1"></i><?= e($b['keterangan']) ?></p>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-2xl font-bold text-emerald-700"><?= e(formatRupiah($b['harga'])) ?></p>
-                        <p class="text-sm text-gray-500"><?= e($b['satuan']) ?></p>
-                    </div>
+        <div class="grid md:grid-cols-3 gap-8">
+            <?php foreach ($pengelola_list as $p): ?>
+            <div class="bg-white rounded-2xl shadow-md border border-gray-200 p-6 text-center hover:shadow-lg transition-shadow">
+                <div class="w-24 h-24 rounded-full mx-auto mb-4 bg-brown-700 flex items-center justify-center text-white text-2xl font-bold overflow-hidden">
+                    <?php if (!empty($p['foto'])): ?>
+                        <img src="../<?= e($p['foto']) ?>" alt="<?= e($p['nama']) ?>" class="w-full h-full object-cover">
+                    <?php else: ?>
+                        <i class="bi bi-person-fill text-3xl"></i>
+                    <?php endif; ?>
                 </div>
+                <h3 class="text-lg font-bold text-brown-800"><?= e($p['nama']) ?></h3>
+                <p class="text-emerald-600 font-medium text-sm"><?= e($p['jabatan']) ?></p>
             </div>
             <?php endforeach; ?>
-        </div>
-
-        <div class="mt-8 text-center">
-            <a href="izin.php" class="inline-block px-8 py-3 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 transition shadow-lg">Ajukan Izin Sekarang</a>
+            <?php if (empty($pengelola_list)): ?>
+            <div class="col-span-3 text-center py-12 text-gray-400">
+                <i class="bi bi-people text-4xl block mb-2"></i>
+                Belum ada data pengelola.
+            </div>
+            <?php endif; ?>
         </div>
     </div>
 </section>

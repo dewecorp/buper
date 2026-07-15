@@ -1,17 +1,27 @@
+RewriteEngine On
+
+# Redirect /index.php to /
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s/index\.php[\s?]
+RewriteRule ^index\.php$ / [L,R=301]
+
+# Redirect .php extension to clean URL (GET only)
+RewriteCond %{THE_REQUEST} ^GET\s(.+)\.php[\s?]
+RewriteCond %{REQUEST_URI} !^/index\.php
+RewriteRule ^(.+)\.php$ /$1 [L,R=301]
+
+# Serve clean URLs from .php files
+RewriteCond %{REQUEST_URI} !\.\w+$
+RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI}.php -f
+RewriteRule ^(.+)$ $1.php [L]
+
 # Protect config directory
 <FilesMatch "^(koneksi\.php|functions\.php)$">
-    Order Allow,Deny
-    Deny from all
+    Require all denied
 </FilesMatch>
 
-# Hide directory listing
 Options -Indexes
-
-# Disable server signature
 ServerSignature Off
 
-# Prevent access to sensitive files
 <FilesMatch "\.(sql|log|env|ini)$">
-    Order Allow,Deny
-    Deny from all
+    Require all denied
 </FilesMatch>

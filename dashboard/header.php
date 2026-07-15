@@ -22,7 +22,7 @@ $namaWebsiteHeader = getPengaturan($conn, 'nama_website') ?: 'Buper Jepara';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Buper Jepara</title>
+    <title><?= e($title) ?> | <?= e($namaWebsiteHeader) ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">

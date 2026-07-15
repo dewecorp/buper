@@ -12,7 +12,7 @@ $tentangSingkat = $r_set['nilai'] ?? 'Bumi Perkemahan Kwartir Cabang Jepara meny
 $namaWebsiteLanding = getPengaturan($conn, 'nama_website') ?: 'Buper Jepara';
 
 // Fetch fasilitas
-$q_fasilitas = mysqli_query($conn, "SELECT * FROM fasilitas WHERE status='tersedia' LIMIT 6");
+$q_fasilitas = mysqli_query($conn, "SELECT * FROM fasilitas WHERE status='tersedia' ORDER BY nama_fasilitas ASC");
 $fasilitas_list = [];
 while ($row = mysqli_fetch_assoc($q_fasilitas)) $fasilitas_list[] = $row;
 
@@ -33,7 +33,7 @@ $base = '/';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= e($profil['nama_buper'] ?? 'Buper Jepara') ?></title>
+    <title><?= e($namaWebsiteLanding) ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -79,7 +79,7 @@ $base = '/';
             </div>
             <div class="hidden md:flex items-center space-x-1 text-sm font-medium">
                 <a href="#profil" class="px-3 py-2 rounded-lg text-brown-700 hover:bg-brown-100 transition">Profil</a>
-                <a href="#pengelola" class="px-3 py-2 rounded-lg text-brown-700 hover:bg-brown-100 transition">Pengelola</a>
+                <a href="landing/pengelola.php" class="px-3 py-2 rounded-lg text-brown-700 hover:bg-brown-100 transition">Pengelola</a>
                 <a href="#fasilitas" class="px-3 py-2 rounded-lg text-brown-700 hover:bg-brown-100 transition">Fasilitas</a>
                 <div class="relative group">
                     <a href="#penggunaan" class="px-3 py-2 rounded-lg text-brown-700 hover:bg-purple-100 transition">Penggunaan</a>
@@ -101,7 +101,7 @@ $base = '/';
     </div>
     <div id="mobileMenu" class="hidden md:hidden border-t border-purple-200 bg-purple-50/80 pb-4">
         <a href="#profil" class="block px-4 py-2 text-brown-700 hover:bg-purple-100">Profil</a>
-        <a href="#pengelola" class="block px-4 py-2 text-brown-700 hover:bg-purple-100">Pengelola</a>
+        <a href="landing/pengelola.php" class="block px-4 py-2 text-brown-700 hover:bg-purple-100">Pengelola</a>
         <a href="#fasilitas" class="block px-4 py-2 text-brown-700 hover:bg-purple-100">Fasilitas</a>
         <a href="#penggunaan" class="block px-4 py-2 text-brown-700 hover:bg-purple-100">Penggunaan</a>
         <a href="landing/data_ajuan.php" class="block px-4 py-2 text-brown-700 hover:bg-purple-100">Data Ajuan</a>
@@ -111,12 +111,18 @@ $base = '/';
 </nav>
 
 <!-- Hero Section -->
-<section class="bg-brown-800 text-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center">
-        <h1 class="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+<section class="relative bg-brown-800 text-white overflow-hidden">
+    <?php if (!empty($profil['foto'])): ?>
+    <div class="absolute inset-0">
+        <img src="<?= e($profil['foto']) ?>" alt="Hero" class="w-full h-full object-cover">
+        <div class="absolute inset-0 bg-gradient-to-r from-brown-900/80 to-brown-800/70"></div>
+    </div>
+    <?php endif; ?>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-screen flex flex-col justify-center text-center">
+        <h1 class="text-4xl md:text-5xl font-bold mb-6 leading-tight drop-shadow-lg">
             <?= e($profil['nama_buper'] ?? 'Bumi Perkemahan Kwartir Cabang Jepara') ?>
         </h1>
-        <p class="text-lg text-emerald-300 max-w-3xl mx-auto mb-8 leading-relaxed">
+        <p class="text-lg text-emerald-300 max-w-3xl mx-auto mb-8 leading-relaxed drop-shadow">
             <?= e($profil['deskripsi'] ?? 'Tempat perkemahan terbaik di Jepara untuk kegiatan Pramuka dan rekreasi alam.') ?>
         </p>
         <div class="flex flex-wrap justify-center gap-4">
@@ -133,31 +139,18 @@ $base = '/';
             <h2 class="text-3xl font-bold text-brown-800 mb-2">Tentang Kami</h2>
             <div class="w-20 h-1 bg-gradient-to-r from-brown-700 to-emerald-500 mx-auto rounded"></div>
         </div>
-        <div class="grid md:grid-cols-2 gap-8 items-center">
+        <div class="space-y-6">
             <div class="bg-gray-100 rounded-2xl p-8">
                 <h3 class="text-xl font-bold text-brown-700 mb-4">Sejarah</h3>
-                <p class="text-gray-600 leading-relaxed mb-6"><?= e($profil['sejarah'] ?? '') ?></p>
-                <h3 class="text-xl font-bold text-emerald-700 mb-3">Visi</h3>
-                <p class="text-gray-600 leading-relaxed mb-4"><?= e($profil['visi'] ?? '') ?></p>
-                <h3 class="text-xl font-bold text-purple-700 mb-3">Misi</h3>
-                <p class="text-gray-600 leading-relaxed"><?= e($profil['misi'] ?? '') ?></p>
+                <p class="text-gray-600 leading-relaxed text-justify"><?= e($profil['sejarah'] ?? '') ?></p>
             </div>
-            <div class="bg-gradient-to-br from-brown-100 to-emerald-50 rounded-2xl p-8">
-                <h3 class="text-xl font-bold text-brown-800 mb-4">Informasi Kontak</h3>
-                <div class="space-y-3 text-gray-700">
-                    <div class="flex items-start gap-3">
-                        <i class="bi bi-geo-alt text-emerald-600 mt-1"></i>
-                        <span><?= e($profil['alamat'] ?? '-') ?></span>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <i class="bi bi-telephone text-emerald-600"></i>
-                        <span><?= e($profil['telepon'] ?? '-') ?></span>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <i class="bi bi-envelope text-emerald-600"></i>
-                        <span><?= e($profil['email'] ?? '-') ?></span>
-                    </div>
-                </div>
+            <div class="bg-gray-100 rounded-2xl p-8">
+                <h3 class="text-xl font-bold text-emerald-700 mb-3">Visi</h3>
+                <p class="text-gray-600 leading-relaxed text-justify"><?= e($profil['visi'] ?? '') ?></p>
+            </div>
+            <div class="bg-gray-100 rounded-2xl p-8">
+                <h3 class="text-xl font-bold text-purple-700 mb-3">Misi</h3>
+                <p class="text-gray-600 leading-relaxed text-justify"><?= e($profil['misi'] ?? '') ?></p>
             </div>
         </div>
     </div>
@@ -177,7 +170,7 @@ $base = '/';
                     <?php if (!empty($p['foto'])): ?>
                         <img src="<?= e($p['foto']) ?>" alt="Foto" class="w-full h-full object-cover">
                     <?php else: ?>
-                        <?= strtoupper(substr($p['nama'], 0, 2)) ?>
+                        <i class="bi bi-person-fill text-3xl"></i>
                     <?php endif; ?>
                 </div>
                 <h3 class="text-lg font-bold text-brown-800"><?= e($p['nama']) ?></h3>
@@ -276,7 +269,7 @@ $base = '/';
                 <h4 class="font-bold mb-4">Menu Cepat</h4>
                 <ul class="space-y-2 text-sm text-brown-200">
                     <li><a href="#profil" class="hover:text-white transition">Profil</a></li>
-                    <li><a href="#pengelola" class="hover:text-white transition">Pengelola</a></li>
+                    <li><a href="landing/pengelola.php" class="hover:text-white transition">Pengelola</a></li>
                     <li><a href="#fasilitas" class="hover:text-white transition">Fasilitas</a></li>
                     <li><a href="landing/biaya.php" class="hover:text-white transition">Biaya Penggunaan</a></li>
                 </ul>

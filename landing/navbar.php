@@ -20,7 +20,7 @@ $namaWebsiteNavbar = \getPengaturan($conn, 'nama_website') ?: 'Buper Jepara';
             </div>
             <div class="hidden md:flex items-center space-x-1 text-sm font-medium">
                 <a href="../index.php#profil" class="px-3 py-2 rounded-lg text-brown-700 hover:bg-purple-100 transition">Profil</a>
-                <a href="../index.php#pengelola" class="px-3 py-2 rounded-lg text-brown-700 hover:bg-purple-100 transition">Pengelola</a>
+                <a href="pengelola.php" class="px-3 py-2 rounded-lg text-brown-700 hover:bg-purple-100 transition">Pengelola</a>
                 <a href="../index.php#fasilitas" class="px-3 py-2 rounded-lg text-brown-700 hover:bg-purple-100 transition">Fasilitas</a>
                 <div class="relative group">
                     <a href="../index.php#penggunaan" class="px-3 py-2 rounded-lg text-brown-700 hover:bg-purple-100 transition">Penggunaan</a>
@@ -42,7 +42,7 @@ $namaWebsiteNavbar = \getPengaturan($conn, 'nama_website') ?: 'Buper Jepara';
     </div>
     <div id="mobileMenu" class="hidden md:hidden border-t border-purple-200 bg-purple-50/80 pb-4">
         <a href="../index.php#profil" class="block px-4 py-2 text-brown-700 hover:bg-purple-100">Profil</a>
-        <a href="../index.php#pengelola" class="block px-4 py-2 text-brown-700 hover:bg-purple-100">Pengelola</a>
+        <a href="pengelola.php" class="block px-4 py-2 text-brown-700 hover:bg-purple-100">Pengelola</a>
         <a href="../index.php#fasilitas" class="block px-4 py-2 text-brown-700 hover:bg-purple-100">Fasilitas</a>
         <a href="../index.php#penggunaan" class="block px-4 py-2 text-brown-700 hover:bg-purple-100">Penggunaan</a>
         <a href="data_ajuan.php" class="block px-4 py-2 text-brown-700 hover:bg-purple-100">Data Ajuan</a>
