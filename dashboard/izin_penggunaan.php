@@ -206,7 +206,9 @@ function openEditModal(data) {
 function approveIzin(id) {
     Swal.fire({
         title: 'Setujui Izin?',
-        text: 'Izin akan disetujui.',
+        input: 'text',
+        inputLabel: 'Catatan (opsional)',
+        inputPlaceholder: 'Masukkan catatan...',
         icon: 'question',
         showCancelButton: true,
         confirmButtonColor: '#059669',
@@ -216,14 +218,30 @@ function approveIzin(id) {
             const formData = new FormData();
             formData.append('action', 'approve');
             formData.append('id', id);
+            formData.append('catatan_admin', result.value || '');
             formData.append('csrf_token', '<?= e(generateCSRFToken()) ?>');
 
             fetch('../proses/izin.php', { method: 'POST', body: formData })
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    Swal.fire({ icon: 'success', title: 'Berhasil!', text: data.message, showConfirmButton: false, timer: 1500 })
-                    .then(() => location.reload());
+                    if (data.wa_url) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil!',
+                            text: data.message,
+                            showCancelButton: true,
+                            confirmButtonColor: '#25D366',
+                            confirmButtonText: 'Notifikasi Pemohon',
+                            cancelButtonText: 'Tutup'
+                        }).then((r) => {
+                            if (r.isConfirmed) window.open(data.wa_url, '_blank');
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({ icon: 'success', title: 'Berhasil!', text: data.message, showConfirmButton: false, timer: 1500 })
+                        .then(() => location.reload());
+                    }
                 } else {
                     Swal.fire({ icon: 'error', title: 'Gagal', text: data.message });
                 }
@@ -236,7 +254,9 @@ function approveIzin(id) {
 function rejectIzin(id) {
     Swal.fire({
         title: 'Tolak Izin?',
-        text: 'Izin akan ditolak.',
+        input: 'text',
+        inputLabel: 'Alasan penolakan',
+        inputPlaceholder: 'Masukkan alasan...',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#dc2626',
@@ -246,14 +266,30 @@ function rejectIzin(id) {
             const formData = new FormData();
             formData.append('action', 'reject');
             formData.append('id', id);
+            formData.append('catatan_admin', result.value || '');
             formData.append('csrf_token', '<?= e(generateCSRFToken()) ?>');
 
             fetch('../proses/izin.php', { method: 'POST', body: formData })
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    Swal.fire({ icon: 'success', title: 'Berhasil!', text: data.message, showConfirmButton: false, timer: 1500 })
-                    .then(() => location.reload());
+                    if (data.wa_url) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil!',
+                            text: data.message,
+                            showCancelButton: true,
+                            confirmButtonColor: '#25D366',
+                            confirmButtonText: 'Notifikasi Pemohon',
+                            cancelButtonText: 'Tutup'
+                        }).then((r) => {
+                            if (r.isConfirmed) window.open(data.wa_url, '_blank');
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({ icon: 'success', title: 'Berhasil!', text: data.message, showConfirmButton: false, timer: 1500 })
+                        .then(() => location.reload());
+                    }
                 } else {
                     Swal.fire({ icon: 'error', title: 'Gagal', text: data.message });
                 }

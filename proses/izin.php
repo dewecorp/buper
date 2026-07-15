@@ -221,7 +221,25 @@ if ($action === 'add' || $action === 'add_public') {
 
     if (mysqli_stmt_execute($stmt)) {
         mysqli_stmt_close($stmt);
-        jsonResponse(true, 'Izin disetujui.');
+
+        $extra = [];
+        $q = mysqli_query($conn, "SELECT nama_peminjam, nowa FROM izin_penggunaan WHERE id=$id");
+        $r = mysqli_fetch_assoc($q);
+        if ($r && !empty($r['nowa'])) {
+            $msg = "✅ *Izin Penggunaan Buper Disetujui*\n\n"
+                . "Assalamu'alaikum {$r['nama_peminjam']},\n\n"
+                . "Izin penggunaan Bumi Perkemahan Kwarcab Jepara telah *DISETUJUI*.\n"
+                . ($catatan ? "Catatan: {$catatan}\n\n" : "\n")
+                . "Silakan hubungi pengelola untuk informasi lebih lanjut.\n"
+                . "Terima kasih.";
+            @sendWhatsAppNotification($conn, $r['nowa'], $msg);
+            $phone = preg_replace('/[^0-9]/', '', $r['nowa']);
+            if (substr($phone, 0, 1) === '0') $phone = '62' . substr($phone, 1);
+            if (substr($phone, 0, 2) !== '62') $phone = '62' . $phone;
+            $extra['wa_url'] = 'https://wa.me/' . $phone . '?text=' . urlencode($msg);
+        }
+
+        jsonResponse(true, 'Izin disetujui.', $extra);
     } else {
         $err = mysqli_error($conn);
         mysqli_stmt_close($stmt);
@@ -238,7 +256,25 @@ if ($action === 'add' || $action === 'add_public') {
 
     if (mysqli_stmt_execute($stmt)) {
         mysqli_stmt_close($stmt);
-        jsonResponse(true, 'Izin ditolak.');
+
+        $extra = [];
+        $q = mysqli_query($conn, "SELECT nama_peminjam, nowa FROM izin_penggunaan WHERE id=$id");
+        $r = mysqli_fetch_assoc($q);
+        if ($r && !empty($r['nowa'])) {
+            $msg = "❌ *Izin Penggunaan Buper Ditolak*\n\n"
+                . "Assalamu'alaikum {$r['nama_peminjam']},\n\n"
+                . "Mohon maaf, izin penggunaan Bumi Perkemahan Kwarcab Jepara *DITOLAK*.\n"
+                . ($catatan ? "Alasan: {$catatan}\n\n" : "\n")
+                . "Silakan ajukan ulang atau hubungi pengelola untuk keterangan lebih lanjut.\n"
+                . "Terima kasih.";
+            @sendWhatsAppNotification($conn, $r['nowa'], $msg);
+            $phone = preg_replace('/[^0-9]/', '', $r['nowa']);
+            if (substr($phone, 0, 1) === '0') $phone = '62' . substr($phone, 1);
+            if (substr($phone, 0, 2) !== '62') $phone = '62' . $phone;
+            $extra['wa_url'] = 'https://wa.me/' . $phone . '?text=' . urlencode($msg);
+        }
+
+        jsonResponse(true, 'Izin ditolak.', $extra);
     } else {
         $err = mysqli_error($conn);
         mysqli_stmt_close($stmt);
