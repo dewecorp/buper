@@ -122,7 +122,7 @@ $base = '/';
         <h1 class="text-4xl md:text-5xl font-bold mb-6 leading-tight drop-shadow-lg">
             <?= e($profil['nama_buper'] ?? 'Bumi Perkemahan Kwartir Cabang Jepara') ?>
         </h1>
-        <p class="text-lg text-emerald-300 max-w-3xl mx-auto mb-8 leading-relaxed drop-shadow">
+        <p class="text-lg text-white max-w-3xl mx-auto mb-8 leading-relaxed drop-shadow">
             <?= e($profil['deskripsi'] ?? 'Tempat perkemahan terbaik di Jepara untuk kegiatan Pramuka dan rekreasi alam.') ?>
         </p>
         <div class="flex flex-wrap justify-center gap-4">
