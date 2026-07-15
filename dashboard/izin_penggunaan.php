@@ -26,11 +26,29 @@ while ($row = mysqli_fetch_assoc($q)) $daftar[] = $row;
     </div>
 
     <div class="bg-white rounded-lg shadow p-6 border border-gray-200">
+        <?php if ($role === 'admin'): ?>
+        <div class="flex items-center gap-3 mb-4">
+            <button id="bulkDeleteBtn" onclick="bulkDelete()" class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline -mt-0.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                Hapus Terpilih (<span id="selectedCount">0</span>)
+            </button>
+            <button onclick="resetRegistrasi()" class="px-4 py-2 bg-amber-600 text-white text-sm font-medium rounded-lg hover:bg-amber-700 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline -mt-0.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                Reset Nomor Registrasi
+            </button>
+        </div>
+        <?php endif; ?>
         <div class="overflow-x-auto">
             <table class="min-w-full table-auto">
                 <thead>
                     <tr class="bg-gray-100 text-gray-600 text-sm leading-normal">
+                        <th class="py-3 px-4 text-center w-10">
+                            <?php if ($role === 'admin'): ?>
+                            <input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)" class="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer">
+                            <?php endif; ?>
+                        </th>
                         <th class="py-3 px-4 text-left w-10">No</th>
+                        <th class="py-3 px-4 text-left w-36">No. Registrasi</th>
                         <th class="py-3 px-4 text-left w-48">Nama Peminjam</th>
                         <th class="py-3 px-4 text-left w-28">No. WA</th>
                         <th class="py-3 px-4 text-left w-44">Nama Kegiatan</th>
@@ -55,7 +73,11 @@ while ($row = mysqli_fetch_assoc($q)) $daftar[] = $row;
                         elseif ($bk === 'lainnya') $bk = 'Lainnya';
                     ?>
                     <tr class="border-b border-gray-100 hover:bg-gray-50">
+                        <?php if ($role === 'admin'): ?>
+                        <td class="py-3 px-4 text-center"><input type="checkbox" class="row-checkbox rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer" value="<?= e($row['id']) ?>"></td>
+                        <?php endif; ?>
                         <td class="py-3 px-4 font-medium"><?= e($i + 1) ?></td>
+                        <td class="py-3 px-4 font-mono text-xs"><?= e($row['nomor_registrasi'] ?? '-') ?></td>
                         <td class="py-3 px-4 font-medium whitespace-nowrap"><?= e($row['nama_peminjam']) ?></td>
                         <td class="py-3 px-4 whitespace-nowrap"><?= e($row['nowa'] ?? '-') ?></td>
                         <td class="py-3 px-4"><?= e($row['nama_kegiatan'] ?? '-') ?></td>
@@ -112,7 +134,7 @@ while ($row = mysqli_fetch_assoc($q)) $daftar[] = $row;
                     </tr>
                     <?php endforeach; ?>
                     <?php if (empty($daftar)): ?>
-                    <tr><td colspan="13" class="py-8 text-center text-gray-500">Belum ada data izin.</td></tr>
+                    <tr><td colspan="<?= $role === 'admin' ? 15 : 14 ?>" class="py-8 text-center text-gray-500">Belum ada data izin.</td></tr>
                     <?php endif; ?>
                 </tbody>
             </table>
@@ -393,6 +415,88 @@ document.getElementById('izinForm').addEventListener('submit', function(e) {
     })
     .catch(() => Swal.fire({ icon: 'error', title: 'Error', text: 'Terjadi kesalahan koneksi.', confirmButtonColor: '#047857' }));
 });
+
+function toggleSelectAll(source) {
+    document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = source.checked);
+    updateSelectedCount();
+}
+
+function updateSelectedCount() {
+    const selected = document.querySelectorAll('.row-checkbox:checked').length;
+    const btn = document.getElementById('bulkDeleteBtn');
+    document.getElementById('selectedCount').textContent = selected;
+    btn.disabled = selected === 0;
+}
+
+document.querySelectorAll('.row-checkbox').forEach(cb => {
+    cb.addEventListener('change', function() {
+        const all = document.querySelectorAll('.row-checkbox');
+        const checked = document.querySelectorAll('.row-checkbox:checked');
+        document.getElementById('selectAll').checked = all.length === checked.length;
+        updateSelectedCount();
+    });
+});
+
+function bulkDelete() {
+    const selected = [...document.querySelectorAll('.row-checkbox:checked')].map(cb => cb.value);
+    if (selected.length === 0) return;
+    Swal.fire({
+        title: 'Hapus ' + selected.length + ' Data?',
+        text: 'Data yang dihapus tidak dapat dikembalikan.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc2626',
+        confirmButtonText: 'Ya, Hapus Semua!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const formData = new FormData();
+            formData.append('action', 'bulk_delete');
+            formData.append('ids', JSON.stringify(selected));
+            formData.append('csrf_token', '<?= e(generateCSRFToken()) ?>');
+
+            fetch('../proses/izin.php', { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({ icon: 'success', title: 'Berhasil!', text: data.message, showConfirmButton: false, timer: 1500 })
+                    .then(() => location.reload());
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Gagal', text: data.message });
+                }
+            })
+            .catch(() => Swal.fire({ icon: 'error', title: 'Error', text: 'Kesalahan koneksi.' }));
+        }
+    });
+}
+
+function resetRegistrasi() {
+    Swal.fire({
+        title: 'Reset Nomor Registrasi?',
+        text: 'Semua nomor registrasi tahun ' + new Date().getFullYear() + ' akan diurutkan ulang dari 001.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d97706',
+        confirmButtonText: 'Ya, Reset!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const formData = new FormData();
+            formData.append('action', 'reset_registrasi');
+            formData.append('csrf_token', '<?= e(generateCSRFToken()) ?>');
+
+            fetch('../proses/izin.php', { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({ icon: 'success', title: 'Berhasil!', text: data.message, showConfirmButton: false, timer: 1500 })
+                    .then(() => location.reload());
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Gagal', text: data.message });
+                }
+            })
+            .catch(() => Swal.fire({ icon: 'error', title: 'Error', text: 'Kesalahan koneksi.' }));
+        }
+    });
+}
 </script>
 
 <!-- Modal Preview Surat -->

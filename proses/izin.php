@@ -80,6 +80,9 @@ if ($action === 'add' || $action === 'add_public') {
     if (mysqli_stmt_execute($stmt)) {
         $insertedId = mysqli_insert_id($conn);
         mysqli_stmt_close($stmt);
+
+        $no_reg = '2011' . date('y') . date('n') . str_pad($insertedId, 3, '0', STR_PAD_LEFT);
+        mysqli_query($conn, "UPDATE izin_penggunaan SET nomor_registrasi='$no_reg' WHERE id=$insertedId");
         catatAktivitas($conn, "Menambahkan izin penggunaan: {$nama_peminjam}", "tambah");
 
         $notifPesan = "Nama: {$nama_peminjam}\nOrganisasi: {$organisasi}\nKegiatan: {$nama_kegiatan}\nTanggal: " . formatTanggal($tanggal_mulai) . " - " . formatTanggal($tanggal_selesai) . "\nPeserta: {$jumlah_peserta} orang";
@@ -211,6 +214,47 @@ if ($action === 'add' || $action === 'add_public') {
         mysqli_stmt_close($stmt);
         jsonResponse(false, 'Gagal: ' . mysqli_error($conn));
     }
+} elseif ($action === 'bulk_delete') {
+    $ids = json_decode($_POST['ids'] ?? '[]', true);
+    if (!is_array($ids) || empty($ids)) jsonResponse(false, 'Tidak ada data yang dipilih.');
+
+    $ids = array_map('intval', $ids);
+    $ids = array_filter($ids, fn($v) => $v > 0);
+    if (empty($ids)) jsonResponse(false, 'ID tidak valid.');
+
+    $placeholders = implode(',', array_fill(0, count($ids), '?'));
+    $types = str_repeat('i', count($ids));
+    $stmt = mysqli_prepare($conn, "DELETE FROM izin_penggunaan WHERE id IN ($placeholders)");
+    if (!$stmt) jsonResponse(false, 'Gagal menyiapkan query.');
+    $params = [$stmt, $types];
+    foreach ($ids as $k => $v) $params[] = &$ids[$k];
+    call_user_func_array('mysqli_stmt_bind_param', $params);
+
+    if (mysqli_stmt_execute($stmt)) {
+        $cnt = mysqli_stmt_affected_rows($stmt);
+        mysqli_stmt_close($stmt);
+        catatAktivitas($conn, "Menghapus {$cnt} izin penggunaan", "hapus");
+        jsonResponse(true, "{$cnt} izin berhasil dihapus.");
+    } else {
+        mysqli_stmt_close($stmt);
+        jsonResponse(false, 'Gagal: ' . mysqli_error($conn));
+    }
+} elseif ($action === 'reset_registrasi') {
+    $q = mysqli_query($conn, "SELECT id, created_at FROM izin_penggunaan ORDER BY id ASC");
+    $stmt = mysqli_prepare($conn, "UPDATE izin_penggunaan SET nomor_registrasi = ? WHERE id = ?");
+    if (!$stmt) jsonResponse(false, 'Gagal menyiapkan query.');
+    $no = 0;
+    while ($row = mysqli_fetch_assoc($q)) {
+        $thn = date('y', strtotime($row['created_at']));
+        $bln = date('n', strtotime($row['created_at']));
+        $no_reg = '2011' . $thn . $bln . str_pad($row['id'], 3, '0', STR_PAD_LEFT);
+        mysqli_stmt_bind_param($stmt, 'si', $no_reg, $row['id']);
+        mysqli_stmt_execute($stmt);
+        $no++;
+    }
+    mysqli_stmt_close($stmt);
+    catatAktivitas($conn, "Reset nomor registrasi ({$no} data)", "edit");
+    jsonResponse(true, "{$no} nomor registrasi berhasil direset.");
 } elseif ($action === 'approve') {
     $id = (int) ($_POST['id'] ?? 0);
     if ($id < 1) jsonResponse(false, 'ID tidak valid.');
