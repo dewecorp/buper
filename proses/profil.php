@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../config/koneksi.php';
+cekSessionTimeout();
 if (!isLogin()) redirect('../auth/login.php');
 if (!isAdmin()) jsonResponse(false, 'Hanya admin yang dapat mengubah profil.');
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') jsonResponse(false, 'Metode tidak diizinkan.');

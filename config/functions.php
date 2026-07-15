@@ -221,6 +221,21 @@ function saveUploadedImage(array $file, string $prefix = 'img'): ?string
 }
 
 /**
+ * Cek session timeout (2 jam idle), kirim JSON jika expired
+ */
+function cekSessionTimeout() {
+    $timeout = 7200;
+    if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > $timeout)) {
+        session_unset();
+        session_destroy();
+        header('Content-Type: application/json');
+        echo json_encode(['success' => false, 'message' => 'Sesi berakhir. Silakan login kembali.']);
+        exit;
+    }
+    $_SESSION['last_activity'] = time();
+}
+
+/**
  * Catat aktivitas pengguna
  */
 function catatAktivitas($conn, $aktivitas, $jenis = 'umum') {

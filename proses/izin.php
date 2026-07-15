@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../config/koneksi.php';
+cekSessionTimeout();
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') jsonResponse(false, 'Metode tidak diizinkan.');
 
 $action = $_POST['action'] ?? '';

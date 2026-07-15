@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../config/koneksi.php';
+cekSessionTimeout();
 if (!isLogin()) jsonResponse(false, 'Sesi habis.');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_FILES['file'])) {

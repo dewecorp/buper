@@ -117,10 +117,10 @@ $namaWebsiteHeader = getPengaturan($conn, 'nama_website') ?: 'Buper Jepara';
                 </button>
                 <hr class="border-gray-100">
                 <?php endif; ?>
-                <a href="../auth/logout.php" class="flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition">
+                <button onclick="confirmLogout()" class="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition text-left">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
                     Logout
-                </a>
+                </button>
             </div>
         </div>
     </div>
@@ -245,6 +245,21 @@ function toggleSidebar() {
     document.getElementById('sidebarOverlay').classList.toggle('hidden');
 }
 
+// Logout confirmation
+function confirmLogout() {
+    Swal.fire({
+        title: 'Yakin ingin logout?',
+        text: 'Anda akan keluar dari sistem.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#dc2626',
+        confirmButtonText: 'Ya, Logout!',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) window.location.href = '../auth/logout.php';
+    });
+}
+
 // Update Sistem
 function updateSistem() {
     Swal.fire({
@@ -263,7 +278,7 @@ function updateSistem() {
                 allowOutsideClick: false,
                 didOpen: () => Swal.showLoading()
             });
-            fetch('../update_sistem.php')
+            fetch('../update_sistem.php', { method: 'POST', headers: {'Content-Type':'application/x-www-form-urlencoded'}, body: 'csrf_token=<?= e(generateCSRFToken()) ?>' })
                 .then(r => r.json())
                 .then(data => {
                     if (data.success) {

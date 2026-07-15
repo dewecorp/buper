@@ -1,5 +1,13 @@
 # Blokir eksekusi PHP di folder uploads
 <FilesMatch "\.(php|phtml|php3|php4|php5|phar|cgi|pl|py|asp|aspx|jsp|sh)$">
-    Deny from all
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Deny from all
+    </IfModule>
+</FilesMatch>
+<FilesMatch "^\.ht">
+    Require all denied
 </FilesMatch>
 Options -Indexes
