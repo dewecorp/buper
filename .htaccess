@@ -1,0 +1,17 @@
+# Protect config directory
+<FilesMatch "^(koneksi\.php|functions\.php)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Hide directory listing
+Options -Indexes
+
+# Disable server signature
+ServerSignature Off
+
+# Prevent access to sensitive files
+<FilesMatch "\.(sql|log|env|ini)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>

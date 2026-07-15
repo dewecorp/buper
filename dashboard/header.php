@@ -1,0 +1,125 @@
+<?php
+if (!isset($conn)) {
+    require_once __DIR__ . '/../config/koneksi.php';
+}
+if (!isLogin()) {
+    redirect('../auth/login.php');
+}
+$role = $_SESSION['role'] ?? '';
+$nama = $_SESSION['nama_lengkap'] ?? '';
+$foto = $_SESSION['foto'] ?? '';
+$initials = '';
+if (!empty($nama)) {
+    $parts = explode(' ', $nama);
+    foreach ($parts as $p) $initials .= strtoupper($p[0] ?? '');
+    $initials = substr($initials, 0, 2);
+}
+$logoDashboard = getPengaturan($conn, 'logo');
+$namaWebsiteHeader = getPengaturan($conn, 'nama_website') ?: 'Buper Jepara';
+?>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Buper Jepara</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <?php if (!empty($logoDashboard)): ?>
+    <link rel="icon" href="../<?= e($logoDashboard) ?>">
+    <?php endif; ?>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; }
+        * { box-sizing: border-box; }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { jakarta: ['Plus Jakarta Sans', 'sans-serif'] },
+                    colors: {
+                        brown: { 50:'#efebe9',100:'#d7ccc8',200:'#bcaaa4',300:'#a1887f',400:'#8d6e63',500:'#795548',600:'#5d4037',700:'#4e342e',800:'#3e2723',900:'#2c1a12' },
+                        emerald: { 50:'#ecfdf5',100:'#d1fae5',200:'#a7f3d0',300:'#6ee7b7',400:'#34d399',500:'#10b981',600:'#059669',700:'#047857',800:'#065f46',900:'#064e3b' },
+                        purple: { 50:'#faf5ff',100:'#f3e8ff',200:'#e9d5ff',300:'#d8b4fe',400:'#c084fc',500:'#a855f7',600:'#9333ea',700:'#7c3aed',800:'#6b21a8',900:'#581c87' }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="h-screen bg-gray-50 flex flex-col overflow-hidden">
+<!-- Top Navbar -->
+<nav class="sticky top-0 z-50 bg-purple-900 text-white shadow-md px-5 py-2.5 flex items-center justify-between flex-shrink-0">
+    <div class="flex items-center gap-2">
+        <a href="index.php" class="flex items-center gap-2">
+            <?php if (!empty($logoDashboard)): ?>
+                <img src="../<?= e($logoDashboard) ?>" alt="Logo" class="w-7 h-7 object-contain">
+            <?php else: ?>
+                <div class="w-7 h-7 bg-emerald-600 rounded-lg flex items-center justify-center text-white font-bold text-[11px] shadow-md">BU</div>
+            <?php endif; ?>
+            <span class="text-sm font-bold text-white"><?= e($namaWebsiteHeader) ?></span>
+        </a>
+        <span class="text-emerald-300 mx-1.5 text-xs">|</span>
+        <span class="text-xs text-purple-200">Dashboard</span>
+    </div>
+    <div class="flex items-center gap-4">
+        <span id="clockDisplay" class="text-xs text-purple-200 hidden md:inline"></span>
+        <a href="../index.php" target="_blank" class="text-xs text-purple-200 hover:text-emerald-300 transition flex items-center gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+            Lihat Website
+        </a>
+        <div class="relative" id="userDropdown">
+            <button onclick="toggleDropdown()" class="flex items-center gap-2 text-xs text-purple-200 hover:text-white transition cursor-pointer">
+                <span class="hidden sm:inline"><?= e($nama) ?></span>
+                <div class="w-6 h-6 rounded-full bg-emerald-600 flex items-center justify-center text-white text-[10px] font-semibold ring-2 ring-emerald-400 flex-shrink-0"><?= e($initials) ?></div>
+            </button>
+            <div id="dropdownMenu" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 hidden z-50">
+                <div class="px-4 py-2 border-b border-gray-100">
+                    <p class="text-sm font-semibold text-gray-800 truncate"><?= e($nama) ?></p>
+                    <p class="text-xs text-gray-500 capitalize"><?= e($role) ?></p>
+                </div>
+                <a href="../auth/logout.php" class="flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                    Logout
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="flex flex-1 overflow-hidden">
+
+<script>
+function updateClock() {
+    const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+    const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+    const now = new Date();
+    const d = days[now.getDay()];
+    const dd = String(now.getDate()).padStart(2,'0');
+    const mm = months[now.getMonth()];
+    const yyyy = now.getFullYear();
+    const hh = String(now.getHours()).padStart(2,'0');
+    const mn = String(now.getMinutes()).padStart(2,'0');
+    const ss = String(now.getSeconds()).padStart(2,'0');
+    document.getElementById('clockDisplay').textContent = `${d}, ${dd} ${mm} ${yyyy} ${hh}:${mn}:${ss}`;
+}
+updateClock();
+setInterval(updateClock, 1000);
+
+function toggleDropdown() {
+    const menu = document.getElementById('dropdownMenu');
+    menu.classList.toggle('hidden');
+}
+document.addEventListener('click', function(e) {
+    const dd = document.getElementById('userDropdown');
+    const menu = document.getElementById('dropdownMenu');
+    if (!dd.contains(e.target)) {
+        menu.classList.add('hidden');
+    }
+});
+</script>
+    <!-- ====== SIDEBAR ====== -->
