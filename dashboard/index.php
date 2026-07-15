@@ -38,6 +38,10 @@ $r6 = mysqli_fetch_assoc($q6);
 $total_izin_ditolak = $r6['total'] ?? 0;
 
 // Aktivitas terbaru
+mysqli_query($conn, "DELETE FROM aktivitas WHERE created_at < DATE_SUB(NOW(), INTERVAL 24 HOUR)");
+$q_total_aktivitas = mysqli_query($conn, "SELECT COUNT(*) AS total FROM aktivitas");
+$r_total_aktivitas = mysqli_fetch_assoc($q_total_aktivitas);
+$total_aktivitas = $r_total_aktivitas['total'] ?? 0;
 $q_aktivitas = mysqli_query($conn, "SELECT * FROM aktivitas ORDER BY created_at DESC LIMIT 20");
 $aktivitas_list = [];
 while ($row = mysqli_fetch_assoc($q_aktivitas)) $aktivitas_list[] = $row;
@@ -180,13 +184,13 @@ include __DIR__ . '/sidebar.php';
 
     <!-- Aktivitas Terbaru -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mt-6">
-        <h2 class="text-lg font-semibold text-gray-800 mb-4">Aktivitas Terbaru</h2>
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">Aktivitas Terbaru <span class="text-sm font-normal text-gray-400">(<?= e($total_aktivitas) ?>)</span></h2>
         <?php if (empty($aktivitas_list)): ?>
             <p class="text-gray-400 text-sm text-center py-6">Belum ada aktivitas.</p>
         <?php else: ?>
             <div class="relative">
                 <div class="absolute left-[17px] top-2 bottom-2 w-0.5 bg-gray-200"></div>
-                <div class="space-y-0">
+                <div class="space-y-0 max-h-[275px] overflow-y-auto overflow-x-hidden">
                     <?php foreach ($aktivitas_list as $a):
                         $c = colorAktivitas($a['jenis']);
                         $i = iconAktivitas($a['jenis']);

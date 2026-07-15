@@ -56,6 +56,14 @@ $namaWebsiteLogin = getPengaturan($conn, 'nama_website') ?: 'Buper Jepara';
         <p class="text-center text-gray-300 text-xs mt-6">&copy; <?= date('Y') ?> Buper Jepara</p>
     </div>
     <script>
+        <?php if (isset($_GET['expired'])): ?>
+        Swal.fire({
+            icon: 'info',
+            title: 'Sesi Berakhir',
+            text: 'Sesi Anda telah berakhir karena tidak ada aktivitas selama 2 jam. Silakan login kembali.',
+            confirmButtonColor: '#6B21A8'
+        });
+        <?php endif; ?>
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const form = this;

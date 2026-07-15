@@ -81,6 +81,9 @@ if ($action === 'add' || $action === 'add_public') {
         mysqli_stmt_close($stmt);
         catatAktivitas($conn, "Menambahkan izin penggunaan: {$nama_peminjam}", "tambah");
 
+        $notifPesan = "Nama: {$nama_peminjam}\nOrganisasi: {$organisasi}\nKegiatan: {$nama_kegiatan}\nTanggal: " . formatTanggal($tanggal_mulai) . " - " . formatTanggal($tanggal_selesai) . "\nPeserta: {$jumlah_peserta} orang";
+        buatNotifikasi($conn, $insertedId, "Ajuan Baru dari {$nama_peminjam}", $notifPesan);
+
         // Notifikasi WhatsApp ke pengelola (silent, jangan blok)
         $extra = ['insert_id' => $insertedId];
         $waTarget = getPengaturan($conn, 'wa_pengelola');

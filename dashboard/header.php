@@ -5,6 +5,14 @@ if (!isset($conn)) {
 if (!isLogin()) {
     redirect('../auth/login.php');
 }
+$timeout = 7200;
+if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > $timeout)) {
+    session_unset();
+    session_destroy();
+    header('Location: ../auth/login.php?expired=1');
+    exit;
+}
+$_SESSION['last_activity'] = time();
 $role = $_SESSION['role'] ?? '';
 $nama = $_SESSION['nama_lengkap'] ?? '';
 $foto = $_SESSION['foto'] ?? '';
@@ -66,12 +74,29 @@ $namaWebsiteHeader = getPengaturan($conn, 'nama_website') ?: 'Buper Jepara';
         <span class="text-emerald-300 mx-1.5 text-xs">|</span>
         <span class="text-xs text-purple-200">Dashboard</span>
     </div>
-    <div class="flex items-center gap-4">
+    <div class="flex items-center gap-3">
         <span id="clockDisplay" class="text-xs text-purple-200 hidden md:inline"></span>
         <a href="../index.php" target="_blank" class="text-xs text-purple-200 hover:text-emerald-300 transition flex items-center gap-1">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
             Lihat Website
         </a>
+        <!-- Notifikasi -->
+        <div class="relative" id="notifDropdown">
+            <button onclick="toggleNotif()" class="relative text-purple-200 hover:text-white transition p-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                <span id="notifBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold rounded-full min-w-[16px] h-4 flex items-center justify-center px-1 leading-none hidden">0</span>
+            </button>
+            <div id="notifMenu" class="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 hidden z-50">
+                <div class="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+                    <h3 class="text-sm font-semibold text-gray-800">Notifikasi</h3>
+                    <button onclick="markAllRead()" class="text-xs text-purple-600 hover:text-purple-800 font-medium transition">Tandai Semua Dibaca</button>
+                </div>
+                <div id="notifList" class="max-h-80 overflow-y-auto">
+                    <div class="px-4 py-6 text-center text-sm text-gray-400">Memuat...</div>
+                </div>
+            </div>
+        </div>
+        <!-- User Dropdown -->
         <div class="relative" id="userDropdown">
             <button onclick="toggleDropdown()" class="flex items-center gap-2 text-xs text-purple-200 hover:text-white transition cursor-pointer">
                 <span class="hidden sm:inline"><?= e($nama) ?></span>
@@ -127,6 +152,87 @@ document.addEventListener('click', function(e) {
     if (!dd.contains(e.target)) {
         menu.classList.add('hidden');
     }
+    const nd = document.getElementById('notifDropdown');
+    const nm = document.getElementById('notifMenu');
+    if (!nd.contains(e.target)) {
+        nm.classList.add('hidden');
+    }
 });
+
+// Notifikasi
+function toggleNotif() {
+    const m = document.getElementById('notifMenu');
+    m.classList.toggle('hidden');
+    if (!m.classList.contains('hidden')) loadNotifikasi();
+}
+function loadNotifikasi() {
+    fetch('../ajax/notifikasi.php?action=list')
+        .then(r => r.json())
+        .then(res => {
+            if (!res.success) return;
+            const list = document.getElementById('notifList');
+            if (!res.data.length) {
+                list.innerHTML = '<div class="px-4 py-6 text-center text-sm text-gray-400">Belum ada notifikasi</div>';
+                return;
+            }
+            list.innerHTML = res.data.map(n => {
+                const tgl = formatWaktu(n.created_at);
+                const bold = !n.dibaca ? 'font-bold' : 'font-normal';
+                const bg = !n.dibaca ? 'bg-purple-50' : '';
+                return '<div onclick="bukaNotif(' + n.id + ',' + n.id_izin + ')" class="px-4 py-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer ' + bg + '">' +
+                    '<p class="text-xs text-gray-800 ' + bold + '">' + escHtml(n.judul) + '</p>' +
+                    '<p class="text-xs text-gray-500 mt-0.5 whitespace-pre-line">' + escHtml(n.pesan) + '</p>' +
+                    '<p class="text-xs text-gray-400 mt-1">' + tgl + '</p>' +
+                '</div>';
+            }).join('');
+            if (res.unread > 0) {
+                document.getElementById('notifBadge').textContent = res.unread;
+                document.getElementById('notifBadge').classList.remove('hidden');
+            } else {
+                document.getElementById('notifBadge').classList.add('hidden');
+            }
+        });
+}
+function bukaNotif(id, idIzin) {
+    fetch('../ajax/notifikasi.php', { method: 'POST', headers: {'Content-Type':'application/x-www-form-urlencoded'}, body: 'action=read&id=' + id })
+        .then(() => { window.location.href = 'izin_penggunaan.php'; });
+}
+function markAllRead() {
+    fetch('../ajax/notifikasi.php', { method: 'POST', headers: {'Content-Type':'application/x-www-form-urlencoded'}, body: 'action=read_all' })
+        .then(() => {
+            document.getElementById('notifBadge').classList.add('hidden');
+            document.querySelectorAll('#notifList > div').forEach(el => { el.classList.remove('bg-purple-50'); el.querySelector('p:first-child')?.classList.remove('font-bold'); el.querySelector('p:first-child')?.classList.add('font-normal'); });
+            loadNotifikasi();
+        });
+}
+function escHtml(s) {
+    const d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+}
+function formatWaktu(dt) {
+    const d = new Date(dt.replace(' ', 'T'));
+    const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+    const dd = String(d.getDate()).padStart(2,'0');
+    const mm = months[d.getMonth()];
+    const yyyy = d.getFullYear();
+    const hh = String(d.getHours()).padStart(2,'0');
+    const mn = String(d.getMinutes()).padStart(2,'0');
+    return dd + ' ' + mm + ' ' + yyyy + ' ' + hh + ':' + mn;
+}
+// Auto refresh notif setiap 30 detik
+setInterval(() => {
+    fetch('../ajax/notifikasi.php?action=list')
+        .then(r => r.json())
+        .then(res => {
+            if (!res.success) return;
+            if (res.unread > 0) {
+                document.getElementById('notifBadge').textContent = res.unread;
+                document.getElementById('notifBadge').classList.remove('hidden');
+            } else {
+                document.getElementById('notifBadge').classList.add('hidden');
+            }
+        });
+}, 30000);
 </script>
     <!-- ====== SIDEBAR ====== -->

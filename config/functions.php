@@ -258,6 +258,18 @@ function sendWhatsAppNotification($conn, $target, $message) {
 }
 
 /**
+ * Buat notifikasi untuk admin dan pengelola
+ */
+function buatNotifikasi($conn, $idIzin, $judul, $pesan) {
+    $stmt = mysqli_prepare($conn, "INSERT INTO notifikasi (id_izin, judul, pesan, dibaca, created_at) VALUES (?, ?, ?, 0, NOW())");
+    if ($stmt) {
+        mysqli_stmt_bind_param($stmt, 'iss', $idIzin, $judul, $pesan);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+    }
+}
+
+/**
  * Kirim respon JSON lalu hentikan eksekusi
  */
 function jsonResponse(bool $success, string $message, array $extra = []): void

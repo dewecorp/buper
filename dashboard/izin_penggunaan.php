@@ -30,19 +30,19 @@ while ($row = mysqli_fetch_assoc($q)) $daftar[] = $row;
             <table class="min-w-full table-auto">
                 <thead>
                     <tr class="bg-gray-100 text-gray-600 text-sm leading-normal">
-                        <th class="py-3 px-4 text-left">No</th>
-                        <th class="py-3 px-4 text-left">Nama Peminjam</th>
-                        <th class="py-3 px-4 text-left">No. WA</th>
-                        <th class="py-3 px-4 text-left">Nama Kegiatan</th>
-                        <th class="py-3 px-4 text-left">Penanggung Jawab</th>
-                        <th class="py-3 px-4 text-left">Organisasi</th>
-                        <th class="py-3 px-4 text-left">Bentuk Kegiatan</th>
-                        <th class="py-3 px-4 text-left">Tanggal</th>
-                        <th class="py-3 px-4 text-center">Peserta</th>
-                        <th class="py-3 px-4 text-center">Pendamping</th>
-                        <th class="py-3 px-4 text-center">File</th>
-                        <th class="py-3 px-4 text-center">Status</th>
-                        <th class="py-3 px-4 text-center">Aksi</th>
+                        <th class="py-3 px-4 text-left w-10">No</th>
+                        <th class="py-3 px-4 text-left w-48">Nama Peminjam</th>
+                        <th class="py-3 px-4 text-left w-28">No. WA</th>
+                        <th class="py-3 px-4 text-left w-44">Nama Kegiatan</th>
+                        <th class="py-3 px-4 text-left w-36">Penanggung Jawab</th>
+                        <th class="py-3 px-4 text-left w-36">Organisasi</th>
+                        <th class="py-3 px-4 text-left w-28">Bentuk Kegiatan</th>
+                        <th class="py-3 px-4 text-left w-52">Tanggal</th>
+                        <th class="py-3 px-4 text-center w-16">Peserta</th>
+                        <th class="py-3 px-4 text-center w-20">Pendamping</th>
+                        <th class="py-3 px-4 text-center w-12">File</th>
+                        <th class="py-3 px-4 text-center w-24">Status</th>
+                        <th class="py-3 px-4 text-center w-28">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="text-gray-700">
@@ -56,8 +56,8 @@ while ($row = mysqli_fetch_assoc($q)) $daftar[] = $row;
                     ?>
                     <tr class="border-b border-gray-100 hover:bg-gray-50">
                         <td class="py-3 px-4 font-medium"><?= e($i + 1) ?></td>
-                        <td class="py-3 px-4 font-medium"><?= e($row['nama_peminjam']) ?></td>
-                        <td class="py-3 px-4"><?= e($row['nowa'] ?? '-') ?></td>
+                        <td class="py-3 px-4 font-medium whitespace-nowrap"><?= e($row['nama_peminjam']) ?></td>
+                        <td class="py-3 px-4 whitespace-nowrap"><?= e($row['nowa'] ?? '-') ?></td>
                         <td class="py-3 px-4"><?= e($row['nama_kegiatan'] ?? '-') ?></td>
                         <td class="py-3 px-4"><?= e($row['penanggung_jawab'] ?? '-') ?></td>
                         <td class="py-3 px-4"><?= e($row['organisasi'] ?? '-') ?></td>
