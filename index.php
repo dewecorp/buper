@@ -12,7 +12,7 @@ $tentangSingkat = $r_set['nilai'] ?? 'Bumi Perkemahan Kwartir Cabang Jepara meny
 $namaWebsiteLanding = getPengaturan($conn, 'nama_website') ?: 'Buper Jepara';
 
 // Fetch fasilitas
-$q_fasilitas = mysqli_query($conn, "SELECT * FROM fasilitas WHERE status='tersedia' ORDER BY nama_fasilitas ASC");
+$q_fasilitas = mysqli_query($conn, "SELECT * FROM fasilitas ORDER BY nama_fasilitas ASC");
 $fasilitas_list = [];
 while ($row = mysqli_fetch_assoc($q_fasilitas)) $fasilitas_list[] = $row;
 
@@ -198,8 +198,8 @@ $base = '/';
                 <?php endif; ?>
                 <div class="p-6">
                 <h3 class="text-lg font-bold text-brown-800 mb-2"><?= e($f['nama_fasilitas']) ?></h3>
-                <p class="text-gray-600 text-sm leading-relaxed mb-3"><?= e($f['deskripsi']) ?></p>
-                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-emerald-100 text-emerald-700">Tersedia</span>
+                <p class="text-gray-600 text-sm leading-relaxed text-justify mb-3"><?= e($f['deskripsi']) ?></p>
+                <span class="px-2 py-1 text-xs font-semibold rounded-full <?= e($f['status'] === 'tersedia' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700') ?>"><?= e(ucfirst(str_replace('_', ' ', $f['status'] ?? 'tersedia'))) ?></span>
                 </div>
             </div>
             <?php endforeach; ?>
