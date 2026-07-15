@@ -43,6 +43,7 @@ if ($action === 'edit') {
 
     if (mysqli_stmt_execute($stmt)) {
         mysqli_stmt_close($stmt);
+        catatAktivitas($conn, "Memperbarui profil buper", "edit");
         jsonResponse(true, 'Profil berhasil diperbarui.');
     } else {
         $err = mysqli_error($conn);

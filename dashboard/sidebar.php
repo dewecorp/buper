@@ -53,6 +53,22 @@
                     Pengaturan
                 </a>
             <?php elseif (isPengelola()): ?>
+                <a href="profil_buper.php" class="flex items-center px-2.5 py-2 rounded-lg text-purple-200 hover:bg-emerald-600 hover:text-white transition-colors duration-200 text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21v-2a4 4 0 00-4-4H9a4 4 0 00-4 4v2m7-12a4 4 0 100-8 4 4 0 000 8z"/></svg>
+                    Data Profil
+                </a>
+                <a href="fasilitas.php" class="flex items-center px-2.5 py-2 rounded-lg text-purple-200 hover:bg-emerald-600 hover:text-white transition-colors duration-200 text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5v10m-9-5h-1m1 0h-1"/></svg>
+                    Data Fasilitas
+                </a>
+                <a href="pengelola.php" class="flex items-center px-2.5 py-2 rounded-lg text-purple-200 hover:bg-emerald-600 hover:text-white transition-colors duration-200 text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h-2v-2a4 4 0 00-4-4H9a4 4 0 00-4 4v2H3M7 11v3m10-3v3m4-10V4a2 2 0 00-2-2H5a2 2 0 00-2 2v2M10 20h4V4h-4v16z"/></svg>
+                    Data Pengelola
+                </a>
+                <a href="biaya.php" class="flex items-center px-2.5 py-2 rounded-lg text-purple-200 hover:bg-emerald-600 hover:text-white transition-colors duration-200 text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Data Biaya
+                </a>
                 <a href="izin_penggunaan.php" class="flex items-center px-2.5 py-2 rounded-lg text-purple-200 hover:bg-emerald-600 hover:text-white transition-colors duration-200 text-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 002 2h2a2 2 0 002-2"/></svg>
                     Data Izin Penggunaan

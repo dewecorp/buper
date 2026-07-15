@@ -14,11 +14,10 @@ if (!file_exists($file)) { header('HTTP/1.0 404 Not Found'); exit; }
 $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
 if ($ext !== 'pdf') { header('HTTP/1.0 403 Forbidden'); exit; }
 
-header('Content-Type: application/pdf');
+header('Content-Type: application/x-binary');
 header('Content-Length: ' . filesize($file));
 header('Cache-Control: private, no-store, no-cache, must-revalidate');
 header('Pragma: no-cache');
-header('X-Content-Type-Options: nosniff');
 ob_clean();
 flush();
 readfile($file);

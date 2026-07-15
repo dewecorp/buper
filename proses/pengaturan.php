@@ -29,6 +29,7 @@ if ($action === 'edit') {
 
     $settings = $_POST['settings'] ?? [];
     if (empty($settings)) {
+        catatAktivitas($conn, "Memperbarui pengaturan", "edit");
         jsonResponse(true, 'Logo berhasil diperbarui.');
     }
 
@@ -47,8 +48,10 @@ if ($action === 'edit') {
     }
 
     if ($success > 0) {
+        catatAktivitas($conn, "Memperbarui pengaturan", "edit");
         jsonResponse(true, "$success pengaturan berhasil diperbarui.");
     } else {
+        catatAktivitas($conn, "Memperbarui pengaturan", "edit");
         jsonResponse(true, 'Pengaturan tersimpan.');
     }
 } else {

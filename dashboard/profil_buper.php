@@ -21,11 +21,13 @@ if (!$profil) {
     <div class="flex justify-between items-center mb-6">
         <div>
             <h1 class="text-2xl font-semibold text-gray-800">Data Profil Buper</h1>
-            <p class="text-sm text-gray-500">Kelola informasi profil Bumi Perkemahan.</p>
+            <p class="text-sm text-gray-500"><?= isAdmin() ? 'Kelola informasi profil Bumi Perkemahan.' : 'Informasi profil Bumi Perkemahan.' ?></p>
         </div>
+        <?php if (isAdmin()): ?>
         <button onclick="openModal('editModal')" class="bg-emerald-600 text-white px-4 py-2 rounded-lg shadow hover:bg-emerald-700 transition-colors">
             Edit Profil
         </button>
+        <?php endif; ?>
     </div>
 
     <div class="bg-white rounded-lg shadow p-6 border border-gray-200 mb-6">

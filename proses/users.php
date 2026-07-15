@@ -29,6 +29,7 @@ if ($action === 'add') {
 
     if (mysqli_stmt_execute($stmt)) {
         mysqli_stmt_close($stmt);
+        catatAktivitas($conn, "Menambahkan user: {$username}", "tambah");
         jsonResponse(true, 'User berhasil ditambahkan.');
     } else {
         $err = mysqli_error($conn);
@@ -63,6 +64,7 @@ if ($action === 'add') {
 
     if (mysqli_stmt_execute($stmt)) {
         mysqli_stmt_close($stmt);
+        catatAktivitas($conn, "Mengedit user: {$username}", "edit");
         jsonResponse(true, 'User berhasil diperbarui.');
     } else {
         $err = mysqli_error($conn);
@@ -79,6 +81,7 @@ if ($action === 'add') {
 
     if (mysqli_stmt_execute($stmt)) {
         mysqli_stmt_close($stmt);
+        catatAktivitas($conn, "Menghapus user #{$id}", "hapus");
         jsonResponse(true, 'User berhasil dihapus.');
     } else {
         mysqli_stmt_close($stmt);

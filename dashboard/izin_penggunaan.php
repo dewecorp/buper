@@ -324,7 +324,22 @@ function deleteIzin(id) {
 }
 
 function previewSurat(id) {
-    window.open('../preview_surat.php?id=' + id + '&t=' + Date.now(), '_blank');
+    document.getElementById('previewIframe').src = '';
+    document.getElementById('previewModal').classList.remove('hidden');
+    document.getElementById('previewModal').querySelector('h3').textContent = 'Memuat...';
+    const url = '../preview_surat.php?id=' + id + '&t=' + Date.now();
+    fetch(url)
+        .then(r => r.arrayBuffer())
+        .then(buf => {
+            const blob = new Blob([buf], { type: 'application/pdf' });
+            document.getElementById('previewIframe').src = URL.createObjectURL(blob);
+            document.getElementById('previewModal').querySelector('h3').textContent = 'Preview Surat';
+        })
+        .catch(() => window.open(url, '_blank'));
+}
+function closePreviewModal() {
+    document.getElementById('previewModal').classList.add('hidden');
+    document.getElementById('previewIframe').src = '';
 }
 
 document.getElementById('izinForm').addEventListener('submit', function(e) {
@@ -343,5 +358,18 @@ document.getElementById('izinForm').addEventListener('submit', function(e) {
     .catch(() => Swal.fire({ icon: 'error', title: 'Error', text: 'Terjadi kesalahan koneksi.', confirmButtonColor: '#047857' }));
 });
 </script>
+
+<!-- Modal Preview Surat -->
+<div id="previewModal" class="fixed inset-0 z-50 hidden bg-black/60 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">
+        <div class="flex items-center justify-between px-6 py-3 border-b border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-800">Preview Surat</h3>
+            <button onclick="closePreviewModal()" class="text-gray-400 hover:text-gray-600 transition-colors text-2xl leading-none">&times;</button>
+        </div>
+        <div class="flex-1 min-h-0 p-2">
+            <iframe id="previewIframe" src="" class="w-full h-[80vh] rounded border-0"></iframe>
+        </div>
+    </div>
+</div>
 
 <?php include __DIR__ . '/footer.php'; ?>

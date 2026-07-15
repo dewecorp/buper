@@ -37,6 +37,43 @@ $q6 = mysqli_query($conn, "SELECT COUNT(*) AS total FROM izin_penggunaan WHERE s
 $r6 = mysqli_fetch_assoc($q6);
 $total_izin_ditolak = $r6['total'] ?? 0;
 
+// Aktivitas terbaru
+$q_aktivitas = mysqli_query($conn, "SELECT * FROM aktivitas ORDER BY created_at DESC LIMIT 20");
+$aktivitas_list = [];
+while ($row = mysqli_fetch_assoc($q_aktivitas)) $aktivitas_list[] = $row;
+
+function timeAgo($datetime) {
+    $now = new DateTime();
+    $then = new DateTime($datetime);
+    $diff = $now->diff($then);
+    if ($diff->y > 0) return $diff->y . ' thn lalu';
+    if ($diff->m > 0) return $diff->m . ' bln lalu';
+    if ($diff->d > 0) return $diff->d . ' hr lalu';
+    if ($diff->h > 0) return $diff->h . ' jam lalu';
+    if ($diff->i > 0) return $diff->i . ' mnt lalu';
+    return 'baru saja';
+}
+
+function iconAktivitas($jenis) {
+    switch ($jenis) {
+        case 'tambah': return 'plus-circle';
+        case 'edit': return 'pencil-square';
+        case 'hapus': return 'trash';
+        case 'update': return 'arrow-repeat';
+        default: return 'circle';
+    }
+}
+
+function colorAktivitas($jenis) {
+    switch ($jenis) {
+        case 'tambah': return 'emerald';
+        case 'edit': return 'amber';
+        case 'hapus': return 'red';
+        case 'update': return 'purple';
+        default: return 'gray';
+    }
+}
+
 // Monthly chart data (last 12 months)
 $bulan_indonesia = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
 $chart_months = [];
@@ -139,6 +176,51 @@ include __DIR__ . '/sidebar.php';
             </div>
         </div>
         <canvas id="peminjamChart" height="100"></canvas>
+    </div>
+
+    <!-- Aktivitas Terbaru -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mt-6">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">Aktivitas Terbaru</h2>
+        <?php if (empty($aktivitas_list)): ?>
+            <p class="text-gray-400 text-sm text-center py-6">Belum ada aktivitas.</p>
+        <?php else: ?>
+            <div class="relative">
+                <div class="absolute left-[17px] top-2 bottom-2 w-0.5 bg-gray-200"></div>
+                <div class="space-y-0">
+                    <?php foreach ($aktivitas_list as $a):
+                        $c = colorAktivitas($a['jenis']);
+                        $i = iconAktivitas($a['jenis']);
+                    ?>
+                    <div class="relative flex gap-4 pb-5">
+                        <div class="relative z-10 flex-shrink-0 w-9 h-9 rounded-full bg-<?= $c ?>-100 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-<?= $c ?>-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <?php if ($i === 'plus-circle'): ?>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                <?php elseif ($i === 'pencil-square'): ?>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/>
+                                <?php elseif ($i === 'trash'): ?>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/>
+                                <?php elseif ($i === 'arrow-repeat'): ?>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182"/>
+                                <?php else: ?>
+                                <circle cx="12" cy="12" r="10"/>
+                                <?php endif; ?>
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0 pt-1">
+                            <p class="text-sm text-gray-800">
+                                <span class="font-semibold"><?= e($a['nama_user']) ?></span>
+                                <span class="text-gray-500"><?= e($a['aktivitas']) ?></span>
+                            </p>
+                            <p class="text-xs text-gray-400 mt-0.5">
+                                <?= e(formatTanggal(date('Y-m-d', strtotime($a['created_at']))) . ' ' . date('H:i', strtotime($a['created_at']))) ?> · <?= timeAgo($a['created_at']) ?>
+                            </p>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        <?php endif; ?>
     </div>
 
 </main>

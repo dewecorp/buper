@@ -161,9 +161,15 @@ document.getElementById('izinForm').addEventListener('submit', function(e) {
                 icon: 'success',
                 title: 'Berhasil!',
                 text: data.message + ' Menunggu persetujuan pengelola.',
-                showConfirmButton: false,
-                timer: 2000
-            }).then(() => {
+                confirmButtonColor: '#059669',
+                confirmButtonText: 'OK',
+                showDenyButton: !!data.wa_url,
+                denyButtonText: 'Notifikasi Pengelola',
+                denyButtonColor: '#25D366'
+            }).then((result) => {
+                if (result.isDenied && data.wa_url) {
+                    window.open(data.wa_url, '_blank');
+                }
                 window.location.href = 'data_ajuan.php';
             });
         } else {

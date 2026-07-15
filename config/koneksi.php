@@ -12,4 +12,5 @@ if (!$conn) {
     die(json_encode(['status' => 'error', 'message' => 'Koneksi database gagal']));
 }
 mysqli_set_charset($conn, "utf8mb4");
+date_default_timezone_set('Asia/Jakarta');
 ?>

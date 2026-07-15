@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../config/koneksi.php';
 if (!isLogin()) redirect('../auth/login.php');
-if (!isAdmin()) jsonResponse(false, 'Hanya admin yang dapat mengelola data biaya.');
+if (!isAdmin() && !isPengelola()) jsonResponse(false, 'Akses ditolak.');
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') jsonResponse(false, 'Metode tidak diizinkan.');
 requireCSRF();
 
@@ -24,6 +24,7 @@ if ($action === 'add') {
     if (mysqli_stmt_execute($stmt)) {
         $insertedId = mysqli_insert_id($conn);
         mysqli_stmt_close($stmt);
+        catatAktivitas($conn, "Menambahkan biaya: {$nama_biaya}", "tambah");
         jsonResponse(true, 'Biaya berhasil ditambahkan.', ['insert_id' => $insertedId]);
     } else {
         $err = mysqli_error($conn);
@@ -47,6 +48,7 @@ if ($action === 'add') {
 
     if (mysqli_stmt_execute($stmt)) {
         mysqli_stmt_close($stmt);
+        catatAktivitas($conn, "Mengedit biaya: {$nama_biaya}", "edit");
         jsonResponse(true, 'Biaya berhasil diperbarui.');
     } else {
         $err = mysqli_error($conn);
@@ -63,6 +65,7 @@ if ($action === 'add') {
 
     if (mysqli_stmt_execute($stmt)) {
         mysqli_stmt_close($stmt);
+        catatAktivitas($conn, "Menghapus biaya #{$id}", "hapus");
         jsonResponse(true, 'Biaya berhasil dihapus.');
     } else {
         mysqli_stmt_close($stmt);

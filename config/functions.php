@@ -221,6 +221,43 @@ function saveUploadedImage(array $file, string $prefix = 'img'): ?string
 }
 
 /**
+ * Catat aktivitas pengguna
+ */
+function catatAktivitas($conn, $aktivitas, $jenis = 'umum') {
+    $id_user = $_SESSION['user_id'] ?? 0;
+    $nama_user = $_SESSION['nama_lengkap'] ?? 'Sistem';
+    $role_user = $_SESSION['role'] ?? 'sistem';
+    $stmt = mysqli_prepare($conn, "INSERT INTO aktivitas (id_user, nama_user, role_user, aktivitas, jenis, created_at) VALUES (?, ?, ?, ?, ?, NOW())");
+    if ($stmt) {
+        mysqli_stmt_bind_param($stmt, 'issss', $id_user, $nama_user, $role_user, $aktivitas, $jenis);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+    }
+}
+
+/**
+ * Kirim notifikasi WhatsApp via Fonnte API
+ */
+function sendWhatsAppNotification($conn, $target, $message) {
+    $apiKey = getPengaturan($conn, 'wa_api_key');
+    if (empty($apiKey) || empty($target)) return false;
+    $curl = curl_init();
+    curl_setopt_array($curl, [
+        CURLOPT_URL => 'https://api.fonnte.com/send',
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_POST => true,
+        CURLOPT_POSTFIELDS => http_build_query([
+            'target' => $target,
+            'message' => $message,
+        ]),
+        CURLOPT_HTTPHEADER => ['Authorization: ' . $apiKey],
+    ]);
+    $response = curl_exec($curl);
+    curl_close($curl);
+    return $response;
+}
+
+/**
  * Kirim respon JSON lalu hentikan eksekusi
  */
 function jsonResponse(bool $success, string $message, array $extra = []): void

@@ -5,11 +5,11 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') jsonResponse(false, 'Metode tidak dii
 $action = $_POST['action'] ?? '';
 $role   = $_SESSION['role'] ?? '';
 
-// Public can submit izin (add_public or add without login)
+// Public actions — no login/CSRF required (even if user is logged in)
 $publicActions = ['add', 'add_public', 'edit_public'];
-$isPublic = in_array($action, $publicActions) && !isLogin();
+$isPublic = in_array($action, $publicActions);
 
-// Protected actions require login
+// Protected actions require login + CSRF
 if (!$isPublic) {
     if (!isLogin()) jsonResponse(false, 'Silakan login terlebih dahulu.');
     requireCSRF();
@@ -79,7 +79,27 @@ if ($action === 'add' || $action === 'add_public') {
     if (mysqli_stmt_execute($stmt)) {
         $insertedId = mysqli_insert_id($conn);
         mysqli_stmt_close($stmt);
-        jsonResponse(true, 'Izin berhasil diajukan.', ['insert_id' => $insertedId]);
+        catatAktivitas($conn, "Menambahkan izin penggunaan: {$nama_peminjam}", "tambah");
+
+        // Notifikasi WhatsApp ke pengelola (silent, jangan blok)
+        $extra = ['insert_id' => $insertedId];
+        $waTarget = getPengaturan($conn, 'wa_pengelola');
+        if (!empty($waTarget)) {
+            $waMsg = "📋 *Notifikasi Pengajuan Izin Penggunaan Buper*\n\n"
+                . "Nama: {$nama_peminjam}\n"
+                . "Organisasi: {$organisasi}\n"
+                . "Kegiatan: {$nama_kegiatan}\n"
+                . "Tanggal: " . formatTanggal($tanggal_mulai) . " - " . formatTanggal($tanggal_selesai) . "\n"
+                . "Peserta: {$jumlah_peserta} orang\n\n"
+                . "Mohon peninjauan dan pemberian izin. Terima kasih.";
+            @sendWhatsAppNotification($conn, $waTarget, $waMsg);
+            $phone = preg_replace('/[^0-9]/', '', $waTarget);
+            if (substr($phone, 0, 1) === '0') $phone = '62' . substr($phone, 1);
+            if (substr($phone, 0, 2) !== '62') $phone = '62' . $phone;
+            $extra['wa_url'] = 'https://wa.me/' . $phone . '?text=' . urlencode($waMsg);
+        }
+
+        jsonResponse(true, 'Izin berhasil diajukan.', $extra);
     } else {
         $err = mysqli_error($conn);
         mysqli_stmt_close($stmt);
@@ -104,6 +124,7 @@ if ($action === 'add' || $action === 'add_public') {
 
     if (mysqli_stmt_execute($stmt)) {
         mysqli_stmt_close($stmt);
+        catatAktivitas($conn, "Mengedit izin penggunaan #{$id}", "edit");
         jsonResponse(true, 'Izin berhasil diperbarui.');
     } else {
         $err = mysqli_error($conn);
@@ -163,6 +184,7 @@ if ($action === 'add' || $action === 'add_public') {
 
     if (mysqli_stmt_execute($stmt)) {
         mysqli_stmt_close($stmt);
+        catatAktivitas($conn, "Mengedit ajuan publik #{$id}", "edit");
         jsonResponse(true, 'Ajuan berhasil diperbarui.');
     } else {
         $err = mysqli_error($conn);
@@ -179,6 +201,7 @@ if ($action === 'add' || $action === 'add_public') {
 
     if (mysqli_stmt_execute($stmt)) {
         mysqli_stmt_close($stmt);
+        catatAktivitas($conn, "Menghapus izin penggunaan #{$id}", "hapus");
         jsonResponse(true, 'Izin berhasil dihapus.');
     } else {
         mysqli_stmt_close($stmt);
