@@ -221,6 +221,9 @@ if ($action === 'add' || $action === 'add_public') {
 
     if (mysqli_stmt_execute($stmt)) {
         mysqli_stmt_close($stmt);
+        $q2 = mysqli_query($conn, "SELECT nama_peminjam FROM izin_penggunaan WHERE id=$id");
+        $r2 = mysqli_fetch_assoc($q2);
+        catatAktivitas($conn, "Menyetujui izin #{$id}: {$r2['nama_peminjam']}", "edit");
 
         $extra = [];
         $q = mysqli_query($conn, "SELECT nama_peminjam, nowa FROM izin_penggunaan WHERE id=$id");
@@ -256,6 +259,9 @@ if ($action === 'add' || $action === 'add_public') {
 
     if (mysqli_stmt_execute($stmt)) {
         mysqli_stmt_close($stmt);
+        $q2 = mysqli_query($conn, "SELECT nama_peminjam FROM izin_penggunaan WHERE id=$id");
+        $r2 = mysqli_fetch_assoc($q2);
+        catatAktivitas($conn, "Menolak izin #{$id}: {$r2['nama_peminjam']}", "hapus");
 
         $extra = [];
         $q = mysqli_query($conn, "SELECT nama_peminjam, nowa FROM izin_penggunaan WHERE id=$id");
@@ -291,6 +297,9 @@ if ($action === 'add' || $action === 'add_public') {
 
     if (mysqli_stmt_execute($stmt)) {
         mysqli_stmt_close($stmt);
+        $q2 = mysqli_query($conn, "SELECT nama_peminjam FROM izin_penggunaan WHERE id=$id");
+        $r2 = mysqli_fetch_assoc($q2);
+        catatAktivitas($conn, "Menyelesaikan izin #{$id}: {$r2['nama_peminjam']}", "edit");
         jsonResponse(true, 'Status diubah selesai.');
     } else {
         $err = mysqli_error($conn);

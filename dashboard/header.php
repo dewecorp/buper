@@ -63,6 +63,9 @@ $namaWebsiteHeader = getPengaturan($conn, 'nama_website') ?: 'Buper Jepara';
 <!-- Top Navbar -->
 <nav class="sticky top-0 z-50 bg-purple-900 text-white shadow-md px-5 py-2.5 flex items-center justify-between flex-shrink-0">
     <div class="flex items-center gap-2">
+        <button onclick="toggleSidebar()" class="md:hidden p-1.5 text-purple-200 hover:text-white transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
         <a href="index.php" class="flex items-center gap-2">
             <?php if (!empty($logoDashboard)): ?>
                 <img src="../<?= e($logoDashboard) ?>" alt="Logo" class="w-7 h-7 object-contain">
@@ -72,11 +75,11 @@ $namaWebsiteHeader = getPengaturan($conn, 'nama_website') ?: 'Buper Jepara';
             <span class="text-sm font-bold text-white"><?= e($namaWebsiteHeader) ?></span>
         </a>
         <span class="text-emerald-300 mx-1.5 text-xs">|</span>
-        <span class="text-xs text-purple-200">Dashboard</span>
+        <span class="text-xs text-purple-200 hidden md:inline">Dashboard</span>
     </div>
     <div class="flex items-center gap-3">
         <span id="clockDisplay" class="text-xs text-purple-200 hidden md:inline"></span>
-        <a href="../index.php" target="_blank" class="text-xs text-purple-200 hover:text-emerald-300 transition flex items-center gap-1">
+        <a href="../index.php" target="_blank" class="text-xs text-purple-200 hover:text-emerald-300 transition items-center gap-1 hidden md:flex">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
             Lihat Website
         </a>
@@ -123,6 +126,7 @@ $namaWebsiteHeader = getPengaturan($conn, 'nama_website') ?: 'Buper Jepara';
     </div>
 </nav>
 
+<div id="sidebarOverlay" class="fixed inset-0 z-20 bg-black/50 hidden md:hidden" onclick="toggleSidebar()"></div>
 <div class="flex flex-1 overflow-hidden">
 
 <script>
@@ -234,5 +238,11 @@ setInterval(() => {
             }
         });
 }, 30000);
+
+// Sidebar toggle mobile
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('-translate-x-full');
+    document.getElementById('sidebarOverlay').classList.toggle('hidden');
+}
 </script>
     <!-- ====== SIDEBAR ====== -->

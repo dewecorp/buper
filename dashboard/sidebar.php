@@ -1,7 +1,7 @@
 <?php
 // Sidebar content
 ?>
-<div class="flex flex-col w-56 flex-shrink-0 self-stretch border-r border-purple-800 bg-purple-900 overflow-y-auto scroll-thin">
+<div id="sidebar" class="fixed md:relative z-30 md:z-auto inset-y-0 left-0 md:flex flex-col w-56 flex-shrink-0 self-stretch border-r border-purple-800 bg-purple-900 overflow-y-auto scroll-thin -translate-x-full md:translate-x-0 transition-transform duration-200 pt-14 md:pt-0">
     <div class="flex flex-col p-3 flex-1">
         <div class="flex items-center gap-2 mb-4 p-2.5 rounded-lg bg-gradient-to-r from-brown-700 to-emerald-600 text-white shadow-sm">
             <div class="relative h-8 w-8 overflow-hidden rounded-full bg-brown-800 flex items-center justify-center text-white text-[11px] font-semibold ring-2 ring-emerald-300">
