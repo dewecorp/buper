@@ -21,8 +21,8 @@ $q_pengelola = mysqli_query($conn, "SELECT * FROM pengelola WHERE status='aktif'
 $pengelola_list = [];
 while ($row = mysqli_fetch_assoc($q_pengelola)) $pengelola_list[] = $row;
 
-// Fetch biaya
-$q_biaya = mysqli_query($conn, "SELECT * FROM biaya LIMIT 4");
+// Fetch biaya (top 4)
+$q_biaya = mysqli_query($conn, "SELECT * FROM biaya ORDER BY id ASC LIMIT 4");
 $biaya_list = [];
 while ($row = mysqli_fetch_assoc($q_biaya)) $biaya_list[] = $row;
 
@@ -218,7 +218,7 @@ $base = '/';
             <?php foreach ($biaya_list as $b): ?>
             <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/20 transition">
                 <h3 class="text-lg font-bold mb-2"><?= e($b['nama_biaya']) ?></h3>
-                <p class="text-2xl font-bold text-emerald-300 mb-2"><?= e(formatRupiah($b['harga'])) ?></p>
+                <p class="text-2xl font-bold text-emerald-300 mb-1"><?= formatRupiah($b['harga_dasar'] ?? $b['harga']) ?></p>
                 <p class="text-sm text-white/80 mb-1"><?= e($b['satuan']) ?></p>
                 <p class="text-xs text-white/60"><?= e($b['deskripsi']) ?></p>
             </div>

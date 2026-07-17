@@ -4,9 +4,25 @@ require_once __DIR__ . '/../config/koneksi.php';
 $q = mysqli_query($conn, "SELECT * FROM profil WHERE id = 1");
 $profil = mysqli_fetch_assoc($q);
 
-$q_biaya = mysqli_query($conn, "SELECT * FROM biaya ORDER BY id ASC");
+$q_biaya = mysqli_query($conn, "SELECT * FROM biaya ORDER BY FIELD(kategori,'fasilitas_umum','fasilitas_khusus','kegiatan_pramuka','kegiatan_umum','event_khusus'), id ASC");
 $biaya_list = [];
 while ($row = mysqli_fetch_assoc($q_biaya)) $biaya_list[] = $row;
+
+$kelompok = [];
+foreach ($biaya_list as $b) {
+    $k = $b['kategori'];
+    if (!isset($kelompok[$k])) $kelompok[$k] = [];
+    $kelompok[$k][] = $b;
+}
+
+$judulKategori = [
+    'fasilitas_umum' => ['label' => 'Bagian A: Fasilitas Umum', 'icon' => 'bi-building'],
+    'fasilitas_khusus' => ['label' => 'Bagian B: Fasilitas Khusus', 'icon' => 'bi-lightning-charge'],
+    'kegiatan_pramuka' => ['label' => 'Bagian C: Kegiatan Per Kepala (Pramuka)', 'icon' => 'bi-people'],
+    'kegiatan_umum' => ['label' => 'Bagian D: Kegiatan Per Kepala (Umum)', 'icon' => 'bi-people-fill'],
+    'event_khusus' => ['label' => 'Bagian E: Event / Acara Khusus', 'icon' => 'bi-calendar-event']
+];
+
 $logoBiaya = getPengaturan($conn, 'logo');
 $namaWebBiaya = getPengaturan($conn, 'nama_website') ?: 'Buper Jepara';
 ?>
@@ -46,23 +62,43 @@ $namaWebBiaya = getPengaturan($conn, 'nama_website') ?: 'Buper Jepara';
             <p class="text-gray-600 mt-4">Berikut adalah daftar biaya penggunaan Bumi Perkemahan.</p>
         </div>
 
-        <div class="space-y-4">
-            <?php foreach ($biaya_list as $i => $b): ?>
-            <div class="bg-white rounded-2xl shadow-md border border-gray-200 p-6 hover:shadow-lg transition">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div class="flex-1">
-                        <h3 class="text-xl font-bold text-brown-800 mb-1"><?= e($b['nama_biaya']) ?></h3>
-                        <p class="text-gray-600 text-sm mb-2"><?= e($b['deskripsi']) ?></p>
-                        <p class="text-xs text-gray-500"><i class="bi bi-info-circle mr-1"></i><?= e($b['keterangan']) ?></p>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-2xl font-bold text-emerald-700"><?= e(formatRupiah($b['harga'])) ?></p>
-                        <p class="text-sm text-gray-500"><?= e($b['satuan']) ?></p>
+        <?php foreach ($kelompok as $kategori => $items): ?>
+        <div class="mb-10">
+            <div class="flex items-center gap-3 mb-4">
+                <i class="<?= $judulKategori[$kategori]['icon'] ?? 'bi-tag' ?> text-2xl text-brown-700"></i>
+                <h2 class="text-xl font-bold text-brown-800"><?= e($judulKategori[$kategori]['label'] ?? $kategori) ?></h2>
+            </div>
+            <div class="space-y-3">
+                <?php foreach ($items as $b): ?>
+                <div class="bg-white rounded-2xl shadow-md border border-gray-200 p-5 hover:shadow-lg transition">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                        <div class="flex-1">
+                            <h3 class="text-lg font-bold text-brown-800"><?= e($b['nama_biaya']) ?></h3>
+                            <p class="text-gray-600 text-sm mb-1"><?= e($b['deskripsi']) ?></p>
+                            <?php if ($b['tipe_durasi'] === 'hari' && $b['harga_per_hari_tambahan']): ?>
+                            <p class="text-xs text-gray-500">
+                                <i class="bi bi-info-circle mr-1"></i><?= e($b['keterangan']) ?>
+                            </p>
+                            <?php elseif ($b['keterangan']): ?>
+                            <p class="text-xs text-gray-500"><i class="bi bi-info-circle mr-1"></i><?= e($b['keterangan']) ?></p>
+                            <?php endif; ?>
+                        </div>
+                        <div class="text-right flex-shrink-0">
+                            <p class="text-2xl font-bold text-emerald-700"><?= formatRupiah($b['harga_dasar'] ?? $b['harga']) ?></p>
+                            <p class="text-sm text-gray-500"><?= e($b['satuan']) ?></p>
+                            <?php if ($b['tipe_durasi'] === 'hari' && $b['harga_per_hari_tambahan']): ?>
+                            <p class="text-xs text-emerald-600 font-medium">+ <?= formatRupiah($b['harga_per_hari_tambahan']) ?>/hari berikutnya</p>
+                            <?php endif; ?>
+                            <?php if ($b['min_peserta'] !== null): ?>
+                            <p class="text-xs text-gray-400">Peserta: <?= e($b['min_peserta'] . '-' . ($b['max_peserta'] >= 99999 ? 'lebih' : $b['max_peserta'])) ?> orang</p>
+                            <?php endif; ?>
+                        </div>
                     </div>
                 </div>
+                <?php endforeach; ?>
             </div>
-            <?php endforeach; ?>
         </div>
+        <?php endforeach; ?>
 
         <div class="mt-8 text-center">
             <a href="izin.php" class="inline-block px-8 py-3 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 transition shadow-lg">Ajukan Izin Sekarang</a>
@@ -73,7 +109,6 @@ $namaWebBiaya = getPengaturan($conn, 'nama_website') ?: 'Buper Jepara';
 <footer class="bg-brown-800 text-white py-8 text-center text-sm">
     &copy; <?= date('Y') ?> <?= e($profil['nama_buper'] ?? 'Buper Jepara') ?>. All rights reserved.
 </footer>
-<!-- Back to Top -->
 <button onclick="window.scrollTo({top:0,behavior:'smooth'})" id="backToTop" class="fixed bottom-6 right-6 z-50 w-10 h-10 rounded-full bg-purple-700 text-white shadow-lg hover:bg-purple-600 transition-opacity opacity-0 invisible flex items-center justify-center" style="transition: opacity 0.3s, visibility 0.3s">
     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
 </button>

@@ -86,7 +86,7 @@ $chart_disetujui = [];
 $chart_ditolak = [];
 $chart_selesai = [];
 for ($m = 11; $m >= 0; $m--) {
-    $month = date('Y-m', strtotime("-${m} months"));
+    $month = date('Y-m', strtotime("-{$m} months"));
     $m_num = (int)date('m', strtotime($month . '-01')) - 1;
     $chart_months[] = $bulan_indonesia[$m_num] . ' ' . date('Y', strtotime($month . '-01'));
     $cq = mysqli_query($conn, "SELECT status, COUNT(*) AS total FROM izin_penggunaan WHERE DATE_FORMAT(created_at, '%Y-%m') = '$month' GROUP BY status");
