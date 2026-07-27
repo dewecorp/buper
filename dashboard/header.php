@@ -58,6 +58,7 @@ $namaWebsiteHeader = getPengaturan($conn, 'nama_website') ?: 'Buper Jepara';
             }
         }
     </script>
+    <style>main { overflow-y: visible !important; }</style>
 </head>
 <body class="h-screen bg-gray-50 flex flex-col overflow-hidden">
 <!-- Top Navbar -->

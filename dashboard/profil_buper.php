@@ -17,7 +17,7 @@ if (!$profil) {
 }
 ?>
 
-<main class="flex-1 p-6 bg-gray-100">
+<main class="flex-1 p-6 bg-gray-100 overflow-y-auto">
     <div class="flex justify-between items-center mb-6">
         <div>
             <h1 class="text-2xl font-semibold text-gray-800">Data Profil Buper</h1>
