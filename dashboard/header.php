@@ -127,7 +127,7 @@ $namaWebsiteHeader = getPengaturan($conn, 'nama_website') ?: 'Buper Jepara';
 </nav>
 
 <div id="sidebarOverlay" class="fixed inset-0 z-20 bg-black/50 hidden md:hidden" onclick="toggleSidebar()"></div>
-<div class="flex flex-1 overflow-hidden">
+<div class="flex flex-1 flex-col overflow-y-auto">
 
 <script>
 function updateClock() {

@@ -111,7 +111,7 @@ include __DIR__ . '/header.php';
 include __DIR__ . '/sidebar.php';
 ?>
 
-<main class="flex-1 p-6 bg-gray-100 overflow-y-auto font-jakarta">
+<main class="flex-1 p-6 bg-gray-100 font-jakarta">
     <h1 class="text-2xl font-bold text-gray-900 mb-2">Dashboard</h1>
     <p class="text-sm text-gray-500 mb-6">Ringkasan data Buper Jepara.</p>
 
