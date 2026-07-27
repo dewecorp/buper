@@ -60,4 +60,6 @@ $_SESSION['nama_lengkap']  = $user['nama_lengkap'];
 $_SESSION['role']          = $user['role'];
 $_SESSION['foto']          = $user['foto'] ?? '';
 
+catatAktivitas($conn, "{$user['nama_lengkap']} login ke sistem.", 'login');
+
 jsonResponse(true, 'Login berhasil.', ['redirect' => '../dashboard/']);

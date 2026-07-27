@@ -1,5 +1,8 @@
 <?php
 require_once __DIR__ . '/../config/koneksi.php';
+
+catatAktivitas($conn, "{$_SESSION['nama_lengkap']} logout dari sistem.", 'logout');
+
 session_unset();
 session_destroy();
 $params = session_get_cookie_params();
