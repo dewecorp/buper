@@ -92,7 +92,7 @@ foreach ($settings as $s) {
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <?php foreach ($settings as $s): ?>
-                    <?php if (in_array($s['nama_pengaturan'], ['logo','logo_pramuka','logo_wosm'])) continue; ?>
+                    <?php if (in_array($s['nama_pengaturan'], ['logo','logo_pramuka','logo_wosm','versi'])) continue; ?>
                     <div class="<?= $s['nama_pengaturan'] === 'lokasi_map' ? 'md:col-span-2' : '' ?>">
                         <label class="block text-sm font-medium text-gray-700 mb-1"><?= e($s['keterangan'] ?? $s['nama_pengaturan']) ?></label>
                         <?php if ($s['nama_pengaturan'] === 'lokasi_map'): ?>
