@@ -54,21 +54,21 @@ if (!$profil) {
 
     <div class="bg-white rounded-lg shadow p-6 border border-gray-200 mb-6">
         <h3 class="text-lg font-semibold text-gray-800 mb-4">Deskripsi</h3>
-        <div class="text-gray-700 leading-relaxed prose max-w-none"><?= $profil['deskripsi'] ?? '-' ?></div>
+        <div class="text-gray-700 text-justify [&_p]:text-justify leading-relaxed prose max-w-none"><?= $profil['deskripsi'] ?? '-' ?></div>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <div class="bg-white rounded-lg shadow p-6 border border-gray-200">
             <h4 class="text-sm font-semibold text-emerald-700 uppercase tracking-wide mb-2">Sejarah</h4>
-            <div class="text-gray-700 text-sm leading-relaxed prose max-w-none"><?= $profil['sejarah'] ?? '-' ?></div>
+            <div class="text-gray-700 text-sm text-justify [&_p]:text-justify leading-relaxed prose max-w-none"><?= $profil['sejarah'] ?? '-' ?></div>
         </div>
         <div class="bg-white rounded-lg shadow p-6 border border-gray-200">
             <h4 class="text-sm font-semibold text-purple-700 uppercase tracking-wide mb-2">Visi</h4>
-            <div class="text-gray-700 text-sm leading-relaxed prose max-w-none"><?= $profil['visi'] ?? '-' ?></div>
+            <div class="text-gray-700 text-sm text-justify [&_p]:text-justify leading-relaxed prose max-w-none"><?= $profil['visi'] ?? '-' ?></div>
         </div>
         <div class="bg-white rounded-lg shadow p-6 border border-gray-200">
             <h4 class="text-sm font-semibold text-brown-600 uppercase tracking-wide mb-2">Misi</h4>
-            <div class="text-gray-700 text-sm leading-relaxed prose max-w-none"><?= $profil['misi'] ?? '-' ?></div>
+            <div class="text-gray-700 text-sm text-justify [&_p]:text-justify leading-relaxed prose max-w-none"><?= $profil['misi'] ?? '-' ?></div>
         </div>
     </div>
 
@@ -168,12 +168,19 @@ if (!$profil) {
 <script>
 if (typeof CKEDITOR !== 'undefined') {
     CKEDITOR.config.versionCheck = false;
+    CKEDITOR.config.allowedContent = true;
 }
 let editorsInitialized = false;
 
 function initEditors() {
     if (!editorsInitialized && typeof CKEDITOR !== 'undefined') {
-        const cfg = { height: 180, removePlugins: 'elementspath', resize_enabled: true, versionCheck: false };
+        const cfg = {
+            height: 180,
+            removePlugins: 'elementspath',
+            resize_enabled: true,
+            versionCheck: false,
+            allowedContent: true
+        };
         if (document.getElementById('editor_deskripsi')) CKEDITOR.replace('editor_deskripsi', cfg);
         if (document.getElementById('editor_sejarah')) CKEDITOR.replace('editor_sejarah', cfg);
         if (document.getElementById('editor_visi')) CKEDITOR.replace('editor_visi', cfg);

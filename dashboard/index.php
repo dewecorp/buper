@@ -38,6 +38,7 @@ $r6 = mysqli_fetch_assoc($q6);
 $total_izin_ditolak = $r6['total'] ?? 0;
 
 // Aktivitas terbaru
+mysqli_query($conn, "UPDATE aktivitas SET aktivitas = REPLACE(REPLACE(aktivitas, 'GitHub', 'server pusat'), 'github', 'server pusat') WHERE aktivitas LIKE '%github%' OR aktivitas LIKE '%GitHub%'");
 mysqli_query($conn, "DELETE FROM aktivitas WHERE created_at < DATE_SUB(NOW(), INTERVAL 24 HOUR)");
 $q_total_aktivitas = mysqli_query($conn, "SELECT COUNT(*) AS total FROM aktivitas");
 $r_total_aktivitas = mysqli_fetch_assoc($q_total_aktivitas);
@@ -167,67 +168,76 @@ include __DIR__ . '/sidebar.php';
         </div>
     </div>
 
-    <!-- Grafik Peminjam -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <div class="flex items-center justify-between mb-4">
-            <h2 class="text-lg font-semibold text-gray-800">Grafik Peminjam (12 Bulan)</h2>
-            <div class="flex gap-4 text-xs">
-                <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-yellow-400 inline-block"></span>Pending</span>
-                <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-emerald-400 inline-block"></span>Disetujui</span>
-                <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-red-400 inline-block"></span>Ditolak</span>
-                <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-blue-400 inline-block"></span>Selesai</span>
-            </div>
-        </div>
-        <canvas id="peminjamChart" height="100"></canvas>
-    </div>
-
-    <!-- Aktivitas Terbaru -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mt-6">
-        <h2 class="text-lg font-semibold text-gray-800 mb-4">Aktivitas Terbaru <span class="text-sm font-normal text-gray-400">(<?= e($total_aktivitas) ?>)</span></h2>
-        <?php if (empty($aktivitas_list)): ?>
-            <p class="text-gray-400 text-sm text-center py-6">Belum ada aktivitas.</p>
-        <?php else: ?>
-            <div class="relative">
-                <div class="absolute left-[17px] top-2 bottom-2 w-0.5 bg-gray-200"></div>
-                <div class="space-y-0 max-h-[275px] overflow-y-auto overflow-x-hidden">
-                    <?php foreach ($aktivitas_list as $a):
-                        $c = colorAktivitas($a['jenis']);
-                        $i = iconAktivitas($a['jenis']);
-                    ?>
-                    <div class="relative flex gap-4 pb-5">
-                        <div class="relative z-10 flex-shrink-0 w-9 h-9 rounded-full bg-<?= $c ?>-100 flex items-center justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-<?= $c ?>-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <?php if ($i === 'plus-circle'): ?>
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                <?php elseif ($i === 'pencil-square'): ?>
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/>
-                                <?php elseif ($i === 'trash'): ?>
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/>
-                                <?php elseif ($i === 'arrow-repeat'): ?>
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182"/>
-                                <?php elseif ($i === 'arrow-right-on-rectangle'): ?>
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"/>
-                                <?php elseif ($i === 'arrow-left-on-rectangle'): ?>
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0110.5 3h6a2.25 2.25 0 012.25 2.25v13.5A2.25 2.25 0 0116.5 21h-6a2.25 2.25 0 01-2.25-2.25V15m-3 0l-3-3m0 0l3-3m-3 3H15"/>
-                                <?php else: ?>
-                                <circle cx="12" cy="12" r="10"/>
-                                <?php endif; ?>
-                            </svg>
-                        </div>
-                        <div class="flex-1 min-w-0 pt-1">
-                            <p class="text-sm text-gray-800">
-                                <span class="font-semibold"><?= e($a['nama_user']) ?></span>
-                                <span class="text-gray-500"><?= e($a['aktivitas']) ?></span>
-                            </p>
-                            <p class="text-xs text-gray-400 mt-0.5">
-                                <?= e(formatTanggal(date('Y-m-d', strtotime($a['created_at']))) . ' ' . date('H:i', strtotime($a['created_at']))) ?> · <?= timeAgo($a['created_at']) ?>
-                            </p>
-                        </div>
+    <!-- Grid Grafik & Aktivitas (2 Kolom Sejajar) -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <!-- Grafik Peminjam -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex flex-col justify-between">
+            <div>
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-2">
+                    <h2 class="text-lg font-semibold text-gray-800">Grafik Peminjam (12 Bulan)</h2>
+                    <div class="flex flex-wrap gap-3 text-xs">
+                        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-yellow-400 inline-block"></span>Pending</span>
+                        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-400 inline-block"></span>Disetujui</span>
+                        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-red-400 inline-block"></span>Ditolak</span>
+                        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-blue-400 inline-block"></span>Selesai</span>
                     </div>
-                    <?php endforeach; ?>
+                </div>
+                <div class="relative w-full">
+                    <canvas id="peminjamChart"></canvas>
                 </div>
             </div>
-        <?php endif; ?>
+        </div>
+
+        <!-- Aktivitas Terbaru -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex flex-col justify-between">
+            <div>
+                <h2 class="text-lg font-semibold text-gray-800 mb-4">Aktivitas Terbaru <span class="text-sm font-normal text-gray-400">(<?= e($total_aktivitas) ?>)</span></h2>
+                <?php if (empty($aktivitas_list)): ?>
+                    <p class="text-gray-400 text-sm text-center py-6">Belum ada aktivitas.</p>
+                <?php else: ?>
+                    <div class="relative">
+                        <div class="absolute left-[17px] top-2 bottom-2 w-0.5 bg-gray-200"></div>
+                        <div class="space-y-0 max-h-[320px] overflow-y-auto overflow-x-hidden">
+                            <?php foreach ($aktivitas_list as $a):
+                                $c = colorAktivitas($a['jenis']);
+                                $i = iconAktivitas($a['jenis']);
+                            ?>
+                            <div class="relative flex gap-4 pb-4">
+                                <div class="relative z-10 flex-shrink-0 w-9 h-9 rounded-full bg-<?= $c ?>-100 flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-<?= $c ?>-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <?php if ($i === 'plus-circle'): ?>
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        <?php elseif ($i === 'pencil-square'): ?>
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/>
+                                        <?php elseif ($i === 'trash'): ?>
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/>
+                                        <?php elseif ($i === 'arrow-repeat'): ?>
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182"/>
+                                        <?php elseif ($i === 'arrow-right-on-rectangle'): ?>
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"/>
+                                        <?php elseif ($i === 'arrow-left-on-rectangle'): ?>
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0110.5 3h6a2.25 2.25 0 012.25 2.25v13.5A2.25 2.25 0 0116.5 21h-6a2.25 2.25 0 01-2.25-2.25V15m-3 0l-3-3m0 0l3-3m-3 3H15"/>
+                                        <?php else: ?>
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <?php endif; ?>
+                                    </svg>
+                                </div>
+                                <div class="flex-1 min-w-0 pt-1">
+                                    <p class="text-sm text-gray-800">
+                                        <span class="font-semibold"><?= e($a['nama_user']) ?></span>
+                                        <span class="text-gray-500"><?= e(str_ireplace('GitHub', 'server pusat', $a['aktivitas'])) ?></span>
+                                    </p>
+                                    <p class="text-xs text-gray-400 mt-0.5">
+                                        <?= e(formatTanggal(date('Y-m-d', strtotime($a['created_at']))) . ' ' . date('H:i', strtotime($a['created_at']))) ?> · <?= timeAgo($a['created_at']) ?>
+                                    </p>
+                                </div>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
     </div>
 
 </main>
