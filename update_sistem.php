@@ -55,7 +55,7 @@ fclose($fp);
 
 if ($httpCode !== 200) {
     rrmdir($tmpDir);
-    echo json_encode(['success' => false, 'message' => 'Gagal mengunduh repository. HTTP code: ' . $httpCode]);
+    echo json_encode(['success' => false, 'message' => 'Gagal mengunduh pembaruan. HTTP code: ' . $httpCode]);
     exit;
 }
 
@@ -94,7 +94,7 @@ $requiredFiles = ['index.php', 'config/koneksi.php', 'config/functions.php', 'da
 foreach ($requiredFiles as $rf) {
     if (!file_exists($extractDir . '/' . $rf)) {
         rrmdir($tmpDir);
-        echo json_encode(['success' => false, 'message' => 'Repository tidak valid: ' . $rf . ' tidak ditemukan.']);
+        echo json_encode(['success' => false, 'message' => 'Pembaruan tidak valid: ' . $rf . ' tidak ditemukan.']);
         exit;
     }
 }
@@ -125,7 +125,7 @@ rrmdir($tmpDir);
 
 // Catat aktivitas + IP
 $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
-catatAktivitas($conn, "Memperbarui sistem dari GitHub (IP: {$ip})", "update");
+catatAktivitas($conn, "Memperbarui sistem dari server pusat (IP: {$ip})", "update");
 
 // Simpan timestamp rate limit
 $_SESSION['last_update_sistem'] = time();

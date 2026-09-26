@@ -268,7 +268,7 @@ function confirmLogout() {
 function updateSistem() {
     Swal.fire({
         title: 'Update Sistem?',
-        text: 'Sistem akan diperbarui dari repository GitHub. Proses ini membutuhkan koneksi internet.',
+        text: 'Sistem akan diperbarui dari server pusat. Proses ini membutuhkan koneksi internet.',
         icon: 'question',
         showCancelButton: true,
         confirmButtonColor: '#7c3aed',
