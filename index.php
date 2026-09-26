@@ -123,7 +123,7 @@ $base = '/';
             <?= e($profil['nama_buper'] ?? 'Bumi Perkemahan Kwartir Cabang Jepara') ?>
         </h1>
         <p class="text-lg text-white max-w-3xl mx-auto mb-8 leading-relaxed drop-shadow">
-            <?= e($profil['deskripsi'] ?? 'Tempat perkemahan terbaik di Jepara untuk kegiatan Pramuka dan rekreasi alam.') ?>
+            <?= strip_tags($profil['deskripsi'] ?? 'Tempat perkemahan terbaik di Jepara untuk kegiatan Pramuka dan rekreasi alam.') ?>
         </p>
         <div class="flex flex-wrap justify-center gap-4">
             <a href="#fasilitas" class="px-8 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-lg shadow-lg transition-colors">Lihat Fasilitas</a>
@@ -142,15 +142,15 @@ $base = '/';
         <div class="space-y-6">
             <div class="bg-gray-100 rounded-2xl p-8">
                 <h3 class="text-xl font-bold text-brown-700 mb-4">Sejarah</h3>
-                <p class="text-gray-600 leading-relaxed text-justify"><?= e($profil['sejarah'] ?? '') ?></p>
+                <div class="text-gray-600 leading-relaxed text-justify prose max-w-none"><?= $profil['sejarah'] ?? '' ?></div>
             </div>
             <div class="bg-gray-100 rounded-2xl p-8">
                 <h3 class="text-xl font-bold text-emerald-700 mb-3">Visi</h3>
-                <p class="text-gray-600 leading-relaxed text-justify"><?= e($profil['visi'] ?? '') ?></p>
+                <div class="text-gray-600 leading-relaxed text-justify prose max-w-none"><?= $profil['visi'] ?? '' ?></div>
             </div>
             <div class="bg-gray-100 rounded-2xl p-8">
                 <h3 class="text-xl font-bold text-purple-700 mb-3">Misi</h3>
-                <p class="text-gray-600 leading-relaxed text-justify"><?= e($profil['misi'] ?? '') ?></p>
+                <div class="text-gray-600 leading-relaxed text-justify prose max-w-none"><?= $profil['misi'] ?? '' ?></div>
             </div>
         </div>
     </div>

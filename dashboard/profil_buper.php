@@ -54,21 +54,21 @@ if (!$profil) {
 
     <div class="bg-white rounded-lg shadow p-6 border border-gray-200 mb-6">
         <h3 class="text-lg font-semibold text-gray-800 mb-4">Deskripsi</h3>
-        <p class="text-gray-700 leading-relaxed"><?= e($profil['deskripsi'] ?? '-') ?></p>
+        <div class="text-gray-700 leading-relaxed prose max-w-none"><?= $profil['deskripsi'] ?? '-' ?></div>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <div class="bg-white rounded-lg shadow p-6 border border-gray-200">
             <h4 class="text-sm font-semibold text-emerald-700 uppercase tracking-wide mb-2">Sejarah</h4>
-            <p class="text-gray-700 text-sm leading-relaxed"><?= e($profil['sejarah'] ?? '-') ?></p>
+            <div class="text-gray-700 text-sm leading-relaxed prose max-w-none"><?= $profil['sejarah'] ?? '-' ?></div>
         </div>
         <div class="bg-white rounded-lg shadow p-6 border border-gray-200">
             <h4 class="text-sm font-semibold text-purple-700 uppercase tracking-wide mb-2">Visi</h4>
-            <p class="text-gray-700 text-sm leading-relaxed"><?= e($profil['visi'] ?? '-') ?></p>
+            <div class="text-gray-700 text-sm leading-relaxed prose max-w-none"><?= $profil['visi'] ?? '-' ?></div>
         </div>
         <div class="bg-white rounded-lg shadow p-6 border border-gray-200">
             <h4 class="text-sm font-semibold text-brown-600 uppercase tracking-wide mb-2">Misi</h4>
-            <p class="text-gray-700 text-sm leading-relaxed"><?= e($profil['misi'] ?? '-') ?></p>
+            <div class="text-gray-700 text-sm leading-relaxed prose max-w-none"><?= $profil['misi'] ?? '-' ?></div>
         </div>
     </div>
 
@@ -89,9 +89,9 @@ if (!$profil) {
     </div>
 
     <!-- Modal Edit Profil -->
-    <div id="editModal" class="modal-dashboard modal-dashboard-lg hidden">
+    <div id="editModal" class="modal-dashboard modal-dashboard-wide hidden">
         <div class="modal-dialog">
-            <div class="modal-content">
+            <div class="modal-content max-h-[90vh] overflow-y-auto">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-xl font-bold text-gray-900">Edit Profil</h3>
                     <button onclick="closeModal('editModal')" class="text-gray-500 hover:text-gray-800 text-2xl leading-none">&times;</button>
@@ -122,19 +122,19 @@ if (!$profil) {
                     </div>
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
-                        <textarea name="deskripsi" rows="3" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none"><?= e($profil['deskripsi'] ?? '') ?></textarea>
+                        <textarea id="editor_deskripsi" name="deskripsi" rows="4" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none"><?= e($profil['deskripsi'] ?? '') ?></textarea>
                     </div>
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Sejarah</label>
-                        <textarea name="sejarah" rows="3" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none"><?= e($profil['sejarah'] ?? '') ?></textarea>
+                        <textarea id="editor_sejarah" name="sejarah" rows="4" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none"><?= e($profil['sejarah'] ?? '') ?></textarea>
                     </div>
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Visi</label>
-                        <textarea name="visi" rows="3" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none"><?= e($profil['visi'] ?? '') ?></textarea>
+                        <textarea id="editor_visi" name="visi" rows="4" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none"><?= e($profil['visi'] ?? '') ?></textarea>
                     </div>
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Misi</label>
-                        <textarea name="misi" rows="3" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none"><?= e($profil['misi'] ?? '') ?></textarea>
+                        <textarea id="editor_misi" name="misi" rows="4" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none"><?= e($profil['misi'] ?? '') ?></textarea>
                     </div>
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Alamat</label>
@@ -161,12 +161,45 @@ if (!$profil) {
 
 </main>
 
+<style>
+.cke_notification_warning { display: none !important; }
+</style>
+<script src="https://cdn.ckeditor.com/4.22.1/full/ckeditor.js"></script>
 <script>
-function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
-function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+if (typeof CKEDITOR !== 'undefined') {
+    CKEDITOR.config.versionCheck = false;
+}
+let editorsInitialized = false;
+
+function initEditors() {
+    if (!editorsInitialized && typeof CKEDITOR !== 'undefined') {
+        const cfg = { height: 180, removePlugins: 'elementspath', resize_enabled: true, versionCheck: false };
+        if (document.getElementById('editor_deskripsi')) CKEDITOR.replace('editor_deskripsi', cfg);
+        if (document.getElementById('editor_sejarah')) CKEDITOR.replace('editor_sejarah', cfg);
+        if (document.getElementById('editor_visi')) CKEDITOR.replace('editor_visi', cfg);
+        if (document.getElementById('editor_misi')) CKEDITOR.replace('editor_misi', cfg);
+        editorsInitialized = true;
+    }
+}
+
+function openModal(id) {
+    document.getElementById(id).classList.remove('hidden');
+    if (id === 'editModal') {
+        setTimeout(initEditors, 50);
+    }
+}
+
+function closeModal(id) {
+    document.getElementById(id).classList.add('hidden');
+}
 
 document.getElementById('editProfilForm').addEventListener('submit', function(e) {
     e.preventDefault();
+    if (typeof CKEDITOR !== 'undefined') {
+        for (let instance in CKEDITOR.instances) {
+            CKEDITOR.instances[instance].updateElement();
+        }
+    }
     const formData = new FormData(this);
     fetch('../proses/profil.php', {
         method: 'POST',

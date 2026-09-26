@@ -116,59 +116,54 @@ include __DIR__ . '/sidebar.php';
     <p class="text-sm text-gray-500 mb-6">Ringkasan data Buper Jepara.</p>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div class="bg-white rounded-xl shadow-sm border border-purple-100 p-6 hover:shadow-md transition-shadow">
+        <div class="bg-amber-50 border border-amber-200 rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow">
             <div class="flex items-center justify-between">
-                <p class="text-sm font-medium text-gray-500">Izin Pending</p>
-                <div class="p-2.5 rounded-xl bg-amber-50 text-amber-600">
+                <p class="text-sm font-semibold text-amber-900">Izin Pending</p>
+                <div class="p-2.5 rounded-xl bg-amber-100 text-amber-700 shadow-xs">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.3 2.807-1.3 3.572 0L15.682 9H4.318L8.257 3.099zM5.571 16H14.43c.963 0 1.75-.787 1.75-1.75v-1.5a1.75 1.75 0 00-1.75-1.75h-8.86a1.75 1.75 0 00-1.75 1.75v1.5c0 .963.787 1.75 1.75 1.75z" clip-rule="evenodd" /></svg>
                 </div>
             </div>
-            <p class="text-3xl font-bold text-amber-600 mt-4"><?= e($total_izin_pending) ?></p>
-            <p class="text-xs text-gray-400 mt-1">Perlu persetujuan</p>
+            <p class="text-3xl font-bold text-amber-700 mt-4"><?= e($total_izin_pending) ?></p>
         </div>
 
-        <div class="bg-white rounded-xl shadow-sm border border-emerald-100 p-6 hover:shadow-md transition-shadow">
+        <div class="bg-emerald-50 border border-emerald-200 rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow">
             <div class="flex items-center justify-between">
-                <p class="text-sm font-medium text-gray-500">Izin Disetujui</p>
-                <div class="p-2.5 rounded-xl bg-emerald-50 text-emerald-600">
+                <p class="text-sm font-semibold text-emerald-900">Izin Disetujui</p>
+                <div class="p-2.5 rounded-xl bg-emerald-100 text-emerald-700 shadow-xs">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>
                 </div>
             </div>
-            <p class="text-3xl font-bold text-emerald-600 mt-4"><?= e($total_izin_disetujui) ?></p>
-            <p class="text-xs text-gray-400 mt-1">Telah disetujui</p>
+            <p class="text-3xl font-bold text-emerald-700 mt-4"><?= e($total_izin_disetujui) ?></p>
         </div>
 
-        <div class="bg-white rounded-xl shadow-sm border border-red-100 p-6 hover:shadow-md transition-shadow">
+        <div class="bg-red-50 border border-red-200 rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow">
             <div class="flex items-center justify-between">
-                <p class="text-sm font-medium text-gray-500">Ajuan Ditolak</p>
-                <div class="p-2.5 rounded-xl bg-red-50 text-red-600">
+                <p class="text-sm font-semibold text-red-900">Ajuan Ditolak</p>
+                <div class="p-2.5 rounded-xl bg-red-100 text-red-700 shadow-xs">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
                 </div>
             </div>
-            <p class="text-3xl font-bold text-red-600 mt-4"><?= e($total_izin_ditolak ?? 0) ?></p>
-            <p class="text-xs text-gray-400 mt-1">Ajuan ditolak</p>
+            <p class="text-3xl font-bold text-red-700 mt-4"><?= e($total_izin_ditolak ?? 0) ?></p>
         </div>
 
-        <div class="bg-white rounded-xl shadow-sm border border-purple-100 p-6 hover:shadow-md transition-shadow">
+        <div class="bg-purple-50 border border-purple-200 rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow">
             <div class="flex items-center justify-between">
-                <p class="text-sm font-medium text-gray-500">Total Ajuan Izin</p>
-                <div class="p-2.5 rounded-xl bg-purple-50 text-purple-600">
+                <p class="text-sm font-semibold text-purple-900">Total Ajuan Izin</p>
+                <div class="p-2.5 rounded-xl bg-purple-100 text-purple-700 shadow-xs">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" /></svg>
                 </div>
             </div>
-            <p class="text-3xl font-bold text-purple-600 mt-4"><?= e($total_izin) ?></p>
-            <p class="text-xs text-gray-400 mt-1">Total seluruh ajuan</p>
+            <p class="text-3xl font-bold text-purple-700 mt-4"><?= e($total_izin) ?></p>
         </div>
 
-        <div class="bg-white rounded-xl shadow-sm border border-emerald-100 p-6 hover:shadow-md transition-shadow">
+        <div class="bg-blue-50 border border-blue-200 rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow">
             <div class="flex items-center justify-between">
-                <p class="text-sm font-medium text-gray-500">Total Fasilitas</p>
-                <div class="p-2.5 rounded-xl bg-emerald-50 text-emerald-600">
+                <p class="text-sm font-semibold text-blue-900">Total Fasilitas</p>
+                <div class="p-2.5 rounded-xl bg-blue-100 text-blue-700 shadow-xs">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2h-2zM11 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2h-2z" /></svg>
                 </div>
             </div>
-            <p class="text-3xl font-bold text-emerald-600 mt-4"><?= e($total_fasilitas) ?></p>
-            <p class="text-xs text-gray-400 mt-1">Tersedia</p>
+            <p class="text-3xl font-bold text-blue-700 mt-4"><?= e($total_fasilitas) ?></p>
         </div>
     </div>
 
