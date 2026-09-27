@@ -1,9 +1,9 @@
 <?php
 require_once __DIR__ . '/config/koneksi.php';
 cekSessionTimeout();
-if (!isLogin()) {
+if (!isLogin() || !isAdmin()) {
     header('Content-Type: application/json');
-    echo json_encode(['success' => false, 'message' => 'Anda harus login terlebih dahulu.']);
+    echo json_encode(['success' => false, 'message' => 'Hanya admin yang dapat memperbarui sistem.']);
     exit;
 }
 requireCSRF();
@@ -136,7 +136,7 @@ $parts[count($parts)-1] = (int) ($parts[count($parts)-1]) + 1;
 $versiBaru = implode('.', $parts);
 mysqli_query($conn, "UPDATE pengaturan SET nilai='$versiBaru' WHERE nama_pengaturan='versi'");
 
-echo json_encode(['success' => true, 'message' => "Sistem berhasil diperbarui! ($copied file diupdate)"]);
+echo json_encode(['success' => true, 'message' => "Sistem berhasil diperbarui ke v{$versiBaru}! ({$copied} file diupdate)"]);
 
 // Helper functions
 function copyDir($src, $dst, $exclude = []) {

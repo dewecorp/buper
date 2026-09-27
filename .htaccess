@@ -28,6 +28,10 @@ RewriteRule ^(.+)$ $1.php [L]
 # Block temp update directory
 RewriteRule ^tmp_update(/|$) - [F,L]
 
+# Block backup archives, git metadata, SQL dumps in webroot
+RewriteRule ^(.*\.(zip|bak|old|sql|log|env|ini)|buper_backup\.zip)$ - [F,L]
+RewriteRule ^(\.git|sql|tmp_update)(/|$) - [F,L]
+
 Options -Indexes
 ServerSignature Off
 

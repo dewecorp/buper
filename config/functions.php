@@ -131,6 +131,20 @@ function e($data) {
 }
 
 /**
+ * HTML aman untuk konten rich-text admin (sejarah/visi/misi).
+ * Strip tag berbahaya, sisakan format dasar saja.
+ */
+function safeHtml($html) {
+    $html = (string) ($html ?? '');
+    // Buang event handler, javascript:, dan tag script/style/iframe/object
+    $html = preg_replace('/<(script|style|iframe|object|embed|form|input|button|link|meta)[^>]*>.*?<\/\1\s*>/is', '', $html);
+    $html = preg_replace('/\s+on\w+\s*=\s*("[^"]*"|\'[^\']*\'|[^\s>]+)/i', '', $html);
+    $html = preg_replace('/(href|src)\s*=\s*([\'"]?)\s*javascript:[^"\'>\s]*/i', '$1=$2#', $html);
+    $allowed = '<p><br><b><strong><i><em><u><ul><ol><li><h1><h2><h3><h4><blockquote>';
+    return strip_tags($html, $allowed);
+}
+
+/**
  * Get single pengaturan value by key
  */
 function getPengaturan($conn, $key) {

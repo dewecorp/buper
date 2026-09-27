@@ -4,9 +4,20 @@ require_once __DIR__ . '/../config/koneksi.php';
 $id = (int) ($_GET['id'] ?? 0);
 if ($id < 1) die('ID tidak valid.');
 
-$q = mysqli_query($conn, "SELECT * FROM izin_penggunaan WHERE id = $id");
-$row = mysqli_fetch_assoc($q);
+$stmt = mysqli_prepare($conn, "SELECT * FROM izin_penggunaan WHERE id = ? LIMIT 1");
+mysqli_stmt_bind_param($stmt, 'i', $id);
+mysqli_stmt_execute($stmt);
+$row = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+mysqli_stmt_close($stmt);
 if (!$row) die('Data tidak ditemukan.');
+
+// Akses: user login bebas; publik wajib cocokkan nomor WA pemilik ajuan
+if (!isLogin()) {
+    $nowa = trim($_GET['nowa'] ?? '');
+    if ($nowa === '' || !hash_equals((string)($row['nowa'] ?? ''), $nowa)) {
+        die('Akses ditolak.');
+    }
+}
 
 $profil = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM profil WHERE id = 1"));
 

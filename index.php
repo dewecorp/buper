@@ -142,15 +142,15 @@ $base = '/';
         <div class="space-y-6">
             <div class="bg-gray-100 rounded-2xl p-8">
                 <h3 class="text-xl font-bold text-brown-700 mb-4">Sejarah</h3>
-                <div class="text-gray-600 leading-relaxed text-justify [&_p]:text-justify prose max-w-none"><?= $profil['sejarah'] ?? '' ?></div>
+                <div class="text-gray-600 leading-relaxed text-justify [&_p]:text-justify prose max-w-none"><?= safeHtml($profil['sejarah'] ?? '') ?></div>
             </div>
             <div class="bg-gray-100 rounded-2xl p-8">
                 <h3 class="text-xl font-bold text-emerald-700 mb-3">Visi</h3>
-                <div class="text-gray-600 leading-relaxed text-justify [&_p]:text-justify prose max-w-none"><?= $profil['visi'] ?? '' ?></div>
+                <div class="text-gray-600 leading-relaxed text-justify [&_p]:text-justify prose max-w-none"><?= safeHtml($profil['visi'] ?? '') ?></div>
             </div>
             <div class="bg-gray-100 rounded-2xl p-8">
                 <h3 class="text-xl font-bold text-purple-700 mb-3">Misi</h3>
-                <div class="text-gray-600 leading-relaxed text-justify [&_p]:text-justify prose max-w-none"><?= $profil['misi'] ?? '' ?></div>
+                <div class="text-gray-600 leading-relaxed text-justify [&_p]:text-justify prose max-w-none"><?= safeHtml($profil['misi'] ?? '') ?></div>
             </div>
         </div>
     </div>

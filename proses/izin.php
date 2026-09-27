@@ -6,14 +6,18 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') jsonResponse(false, 'Metode tidak dii
 $action = $_POST['action'] ?? '';
 $role   = $_SESSION['role'] ?? '';
 
-// Public actions — no login/CSRF required (even if user is logged in)
+// Public actions — no login required, but CSRF token IS required
 $publicActions = ['add', 'add_public', 'edit_public'];
 $isPublic = in_array($action, $publicActions);
 
-// Protected actions require login + CSRF
+// All actions require CSRF (public pages embed csrf token in forms)
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    requireCSRF();
+}
+
+// Protected actions require login
 if (!$isPublic) {
     if (!isLogin()) jsonResponse(false, 'Silakan login terlebih dahulu.');
-    requireCSRF();
 }
 
 // Role checks for protected actions
@@ -161,9 +165,22 @@ if ($action === 'add' || $action === 'add_public') {
         jsonResponse(false, 'Bentuk kegiatan tidak valid.');
     }
 
-    // Handle optional file replacement
-    $q = mysqli_query($conn, "SELECT file_surat FROM izin_penggunaan WHERE id = $id LIMIT 1");
-    $old = mysqli_fetch_assoc($q);
+    // Verifikasi kepemilikan: wajib cocokkan No. WA asli pemilik ajuan.
+    // Mencegah IDOR — penyerang tidak bisa ubah ajuan orang lain hanya dengan tebak id.
+    $verif = trim($_POST['verifikasi_nowa'] ?? '');
+    $chk = mysqli_prepare($conn, "SELECT nowa, file_surat, status FROM izin_penggunaan WHERE id = ? LIMIT 1");
+    if (!$chk) jsonResponse(false, 'Gagal menyiapkan query.');
+    mysqli_stmt_bind_param($chk, 'i', $id);
+    mysqli_stmt_execute($chk);
+    $old = mysqli_fetch_assoc(mysqli_stmt_get_result($chk));
+    mysqli_stmt_close($chk);
+    if (!$old) jsonResponse(false, 'Data tidak ditemukan.');
+    if (($old['status'] ?? '') !== 'pending') {
+        jsonResponse(false, 'Ajuan yang sudah diproses tidak dapat diubah.');
+    }
+    if ($verif === '' || !hash_equals((string)($old['nowa'] ?? ''), $verif)) {
+        jsonResponse(false, 'Verifikasi kepemilikan gagal. No. WA tidak cocok.');
+    }
     $file_surat = $old['file_surat'] ?? '';
 
     if (isset($_FILES['file_surat']) && $_FILES['file_surat']['error'] === UPLOAD_ERR_OK) {

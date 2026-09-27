@@ -54,6 +54,9 @@ if (!$user || !password_verify($password, $user['password'])) {
 
 unset($_SESSION[$attemptKey]);
 
+// Cegah session fixation: ID sesi baru pasca-login
+session_regenerate_id(true);
+
 $_SESSION['user_id']       = $user['id'];
 $_SESSION['username']      = $user['username'];
 $_SESSION['nama_lengkap']  = $user['nama_lengkap'];

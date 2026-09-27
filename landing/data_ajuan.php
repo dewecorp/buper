@@ -130,11 +130,11 @@ while ($row = mysqli_fetch_assoc($q)) $izin_list[] = $row;
                                         </button>
                                         <?php endif; ?>
                                         <?php if (!empty($row['file_surat'])): ?>
-                                        <button onclick="previewSurat(<?= e($row['id']) ?>)" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition" title="Lihat Surat">
+                                        <button onclick="previewSurat(<?= (int)$row['id'] ?>, '<?= e($row['nowa'] ?? '') ?>')" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition" title="Lihat Surat">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
                                         </button>
                                         <?php endif; ?>
-                                        <a href="cetak_izin.php?id=<?= e($row['id']) ?>" target="_blank" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-purple-50 text-purple-600 hover:bg-purple-100 transition" title="Cetak Bukti">
+                                        <a href="cetak_izin.php?id=<?= (int)$row['id'] ?>&nowa=<?= urlencode($row['nowa'] ?? '') ?>" target="_blank" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-purple-50 text-purple-600 hover:bg-purple-100 transition" title="Cetak Bukti">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
                                         </a>
                                     </div>
@@ -161,6 +161,7 @@ while ($row = mysqli_fetch_assoc($q)) $izin_list[] = $row;
                 <input type="hidden" name="action" value="edit_public">
                 <input type="hidden" name="csrf_token" value="<?= e(generateCSRFToken()) ?>">
                 <input type="hidden" name="id" id="edit_id">
+                <input type="hidden" name="verifikasi_nowa" id="edit_verifikasi_nowa">
                 <div class="grid md:grid-cols-2 gap-4 mb-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap <span class="text-red-500">*</span></label>
@@ -246,11 +247,11 @@ while ($row = mysqli_fetch_assoc($q)) $izin_list[] = $row;
     </div>
 </div>
 <script>
-function previewSurat(id) {
+function previewSurat(id, nowa) {
     document.getElementById('previewIframe').src = '';
     document.getElementById('previewModal').classList.remove('hidden');
     document.getElementById('previewModal').querySelector('h3').textContent = 'Memuat...';
-    const url = '../preview_surat.php?id=' + id + '&t=' + Date.now();
+    const url = '../preview_surat.php?id=' + encodeURIComponent(id) + '&nowa=' + encodeURIComponent(nowa) + '&t=' + Date.now();
     fetch(url)
         .then(r => r.arrayBuffer())
         .then(buf => {
@@ -273,6 +274,7 @@ function closePreviewModal() {
 <script>
 function openEditAjuan(data) {
     document.getElementById('edit_id').value = data.id;
+    document.getElementById('edit_verifikasi_nowa').value = data.nowa || '';
     document.getElementById('edit_nama').value = data.nama_peminjam;
     document.getElementById('edit_organisasi').value = data.organisasi || '';
     document.getElementById('edit_telepon').value = data.telepon || '';
