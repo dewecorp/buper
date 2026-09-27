@@ -12,7 +12,7 @@ $daftar = [];
 while ($row = mysqli_fetch_assoc($q)) $daftar[] = $row;
 ?>
 
-<main class="flex-1 p-6 bg-gray-100 overflow-y-auto">
+<main class="flex-1 p-6 bg-gray-100 overflow-y-auto min-w-0 max-w-full">
     <div class="flex justify-between items-center mb-6">
         <div>
             <h1 class="text-2xl font-semibold text-gray-800">Data Izin Penggunaan</h1>
@@ -25,9 +25,9 @@ while ($row = mysqli_fetch_assoc($q)) $daftar[] = $row;
         <?php endif; ?>
     </div>
 
-    <div class="bg-white rounded-lg shadow p-6 border border-gray-200">
+    <div class="bg-white rounded-lg shadow p-6 border border-gray-200 min-w-0">
         <?php if ($role === 'admin'): ?>
-        <div class="flex items-center gap-3 mb-4">
+        <div class="flex flex-wrap items-center gap-3 mb-4">
             <button id="bulkDeleteBtn" onclick="bulkDelete()" class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed" disabled>
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline -mt-0.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                 Hapus Terpilih (<span id="selectedCount">0</span>)
@@ -46,7 +46,7 @@ while ($row = mysqli_fetch_assoc($q)) $daftar[] = $row;
             </a>
         </div>
         <?php endif; ?>
-        <div class="overflow-x-auto">
+        <div class="w-full overflow-x-auto border border-gray-100 rounded-lg scroll-thin">
             <table class="min-w-full table-auto">
                 <thead>
                     <tr class="bg-gray-100 text-gray-600 text-sm leading-normal">
@@ -114,10 +114,16 @@ while ($row = mysqli_fetch_assoc($q)) $daftar[] = $row;
                             elseif ($row['status'] === 'ditolak') $statusClass = 'bg-red-100 text-red-700';
                             elseif ($row['status'] === 'selesai') $statusClass = 'bg-blue-100 text-blue-700';
                             ?>
-                            <span class="px-2 py-1 text-xs font-semibold rounded-full <?= $statusClass ?>"><?= e(ucfirst($row['status'])) ?></span>
+                            <button onclick="editStatus(<?= e($row['id']) ?>, '<?= e($row['status']) ?>', '<?= e($row['catatan_admin'] ?? '') ?>')" class="px-2.5 py-1 text-xs font-semibold rounded-full <?= $statusClass ?> hover:opacity-80 transition inline-flex items-center gap-1 cursor-pointer" title="Ubah status">
+                                <span><?= e(ucfirst($row['status'])) ?></span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                            </button>
                         </td>
                         <td class="py-3 px-4 text-center">
                             <div class="flex items-center justify-center gap-1">
+                                <button onclick="editStatus(<?= e($row['id']) ?>, '<?= e($row['status']) ?>', '<?= e($row['catatan_admin'] ?? '') ?>')" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-100 transition" title="Ubah Status">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                                </button>
                                 <?php if ($row['status'] === 'pending'): ?>
                                     <button onclick="approveIzin(<?= e($row['id']) ?>)" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-100 transition" title="Setujui">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
@@ -210,6 +216,60 @@ while ($row = mysqli_fetch_assoc($q)) $daftar[] = $row;
 <script>
 function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
 function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+function editStatus(id, currentStatus, currentCatatan) {
+    const escCatatan = (currentCatatan || '').replace(/"/g, '&quot;');
+    Swal.fire({
+        title: 'Ubah Status Izin',
+        html: `
+            <div class="text-left mb-3">
+                <label class="block text-xs font-semibold text-gray-600 mb-1">Status Izin</label>
+                <select id="swalStatus" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 outline-none">
+                    <option value="pending" ${currentStatus === 'pending' ? 'selected' : ''}>Pending</option>
+                    <option value="disetujui" ${currentStatus === 'disetujui' ? 'selected' : ''}>Disetujui</option>
+                    <option value="ditolak" ${currentStatus === 'ditolak' ? 'selected' : ''}>Ditolak</option>
+                    <option value="selesai" ${currentStatus === 'selesai' ? 'selected' : ''}>Selesai</option>
+                </select>
+            </div>
+            <div class="text-left">
+                <label class="block text-xs font-semibold text-gray-600 mb-1">Catatan Admin (opsional)</label>
+                <textarea id="swalCatatan" rows="3" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 outline-none" placeholder="Masukkan catatan...">${escCatatan}</textarea>
+            </div>
+        `,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#7c3aed',
+        confirmButtonText: 'Simpan Status',
+        cancelButtonText: 'Batal',
+        preConfirm: () => {
+            return {
+                status: document.getElementById('swalStatus').value,
+                catatan: document.getElementById('swalCatatan').value
+            };
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const formData = new FormData();
+            formData.append('action', 'change_status');
+            formData.append('id', id);
+            formData.append('status', result.value.status);
+            formData.append('catatan_admin', result.value.catatan);
+            formData.append('csrf_token', '<?= e(generateCSRFToken()) ?>');
+
+            fetch('../proses/izin.php', { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({ icon: 'success', title: 'Berhasil!', text: data.message, showConfirmButton: false, timer: 1500 })
+                    .then(() => location.reload());
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Gagal', text: data.message });
+                }
+            })
+            .catch(() => Swal.fire({ icon: 'error', title: 'Error', text: 'Kesalahan koneksi.' }));
+        }
+    });
+}
 
 function openAddModal() {
     document.getElementById('modalTitle').textContent = 'Tambah Izin';

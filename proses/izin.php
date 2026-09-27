@@ -23,7 +23,7 @@ if ($action === 'delete') {
 if (($action === 'edit') && !$isPublic) {
     if ($role !== 'pengelola') jsonResponse(false, 'Hanya pengelola yang dapat mengubah data izin.');
 }
-if ($action === 'approve' || $action === 'reject' || $action === 'selesai') {
+if ($action === 'approve' || $action === 'reject' || $action === 'selesai' || $action === 'change_status') {
     if (!in_array($role, ['pengelola', 'admin'])) jsonResponse(false, 'Akses ditolak.');
 }
 
@@ -346,6 +346,28 @@ if ($action === 'add' || $action === 'add_public') {
         $r2 = mysqli_fetch_assoc($q2);
         catatAktivitas($conn, "Menyelesaikan izin #{$id}: {$r2['nama_peminjam']}", "edit");
         jsonResponse(true, 'Status diubah selesai.');
+    } else {
+        $err = mysqli_error($conn);
+        mysqli_stmt_close($stmt);
+        jsonResponse(false, 'Gagal: ' . $err);
+    }
+} elseif ($action === 'change_status') {
+    $id      = (int) ($_POST['id'] ?? 0);
+    $status  = mysqli_real_escape_string($conn, trim($_POST['status'] ?? ''));
+    $catatan = mysqli_real_escape_string($conn, trim($_POST['catatan_admin'] ?? ''));
+
+    if ($id < 1 || !in_array($status, ['pending', 'disetujui', 'ditolak', 'selesai'])) {
+        jsonResponse(false, 'Status tidak valid.');
+    }
+
+    $stmt = mysqli_prepare($conn, "UPDATE izin_penggunaan SET status=?, catatan_admin=? WHERE id=?");
+    if (!$stmt) jsonResponse(false, 'Gagal menyiapkan query.');
+    mysqli_stmt_bind_param($stmt, 'ssi', $status, $catatan, $id);
+
+    if (mysqli_stmt_execute($stmt)) {
+        mysqli_stmt_close($stmt);
+        catatAktivitas($conn, "Mengubah status izin #{$id} menjadi {$status}", "edit");
+        jsonResponse(true, "Status izin berhasil diubah menjadi {$status}.");
     } else {
         $err = mysqli_error($conn);
         mysqli_stmt_close($stmt);

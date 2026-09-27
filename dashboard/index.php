@@ -169,75 +169,100 @@ include __DIR__ . '/sidebar.php';
     </div>
 
     <!-- Grid Grafik & Aktivitas (2 Kolom Sejajar) -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 items-start">
         <!-- Grafik Peminjam -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex flex-col justify-between">
-            <div>
-                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-2">
-                    <h2 class="text-lg font-semibold text-gray-800">Grafik Peminjam (12 Bulan)</h2>
-                    <div class="flex flex-wrap gap-3 text-xs">
-                        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-yellow-400 inline-block"></span>Pending</span>
-                        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-400 inline-block"></span>Disetujui</span>
-                        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-red-400 inline-block"></span>Ditolak</span>
-                        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-blue-400 inline-block"></span>Selesai</span>
-                    </div>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 flex flex-col">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-3 pb-2.5 border-b border-gray-100 gap-2">
+                <div>
+                    <h2 class="text-base font-bold text-gray-900 leading-tight">Grafik Peminjam</h2>
+                    <p class="text-xs text-gray-400">Statistik 12 bulan terakhir</p>
                 </div>
-                <div class="relative w-full">
-                    <canvas id="peminjamChart"></canvas>
+                <div class="flex flex-wrap gap-2.5 text-[11px]">
+                    <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-yellow-400 inline-block"></span>Pending</span>
+                    <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-400 inline-block"></span>Disetujui</span>
+                    <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-red-400 inline-block"></span>Ditolak</span>
+                    <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-blue-400 inline-block"></span>Selesai</span>
                 </div>
+            </div>
+            <div class="relative w-full h-[260px]">
+                <canvas id="peminjamChart"></canvas>
             </div>
         </div>
 
         <!-- Aktivitas Terbaru -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex flex-col justify-between">
-            <div>
-                <h2 class="text-lg font-semibold text-gray-800 mb-4">Aktivitas Terbaru <span class="text-sm font-normal text-gray-400">(<?= e($total_aktivitas) ?>)</span></h2>
-                <?php if (empty($aktivitas_list)): ?>
-                    <p class="text-gray-400 text-sm text-center py-6">Belum ada aktivitas.</p>
-                <?php else: ?>
-                    <div class="relative">
-                        <div class="absolute left-[17px] top-2 bottom-2 w-0.5 bg-gray-200"></div>
-                        <div class="space-y-0 max-h-[320px] overflow-y-auto overflow-x-hidden">
-                            <?php foreach ($aktivitas_list as $a):
-                                $c = colorAktivitas($a['jenis']);
-                                $i = iconAktivitas($a['jenis']);
-                            ?>
-                            <div class="relative flex gap-4 pb-4">
-                                <div class="relative z-10 flex-shrink-0 w-9 h-9 rounded-full bg-<?= $c ?>-100 flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-<?= $c ?>-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <?php if ($i === 'plus-circle'): ?>
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                        <?php elseif ($i === 'pencil-square'): ?>
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/>
-                                        <?php elseif ($i === 'trash'): ?>
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/>
-                                        <?php elseif ($i === 'arrow-repeat'): ?>
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182"/>
-                                        <?php elseif ($i === 'arrow-right-on-rectangle'): ?>
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"/>
-                                        <?php elseif ($i === 'arrow-left-on-rectangle'): ?>
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0110.5 3h6a2.25 2.25 0 012.25 2.25v13.5A2.25 2.25 0 0116.5 21h-6a2.25 2.25 0 01-2.25-2.25V15m-3 0l-3-3m0 0l3-3m-3 3H15"/>
-                                        <?php else: ?>
-                                        <circle cx="12" cy="12" r="10"/>
-                                        <?php endif; ?>
-                                    </svg>
-                                </div>
-                                <div class="flex-1 min-w-0 pt-1">
-                                    <p class="text-sm text-gray-800">
-                                        <span class="font-semibold"><?= e($a['nama_user']) ?></span>
-                                        <span class="text-gray-500"><?= e(str_ireplace('GitHub', 'server pusat', $a['aktivitas'])) ?></span>
-                                    </p>
-                                    <p class="text-xs text-gray-400 mt-0.5">
-                                        <?= e(formatTanggal(date('Y-m-d', strtotime($a['created_at']))) . ' ' . date('H:i', strtotime($a['created_at']))) ?> · <?= timeAgo($a['created_at']) ?>
-                                    </p>
-                                </div>
-                            </div>
-                            <?php endforeach; ?>
-                        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 flex flex-col">
+            <div class="flex items-center justify-between mb-3 pb-2.5 border-b border-gray-100">
+                <div class="flex items-center gap-2">
+                    <div class="p-1.5 rounded-lg bg-purple-50 text-purple-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
                     </div>
-                <?php endif; ?>
+                    <div>
+                        <h2 class="text-base font-bold text-gray-900 leading-tight">Aktivitas Terbaru</h2>
+                        <p class="text-xs text-gray-400">Log kegiatan sistem terkini</p>
+                    </div>
+                </div>
+                <span class="px-2 py-0.5 text-[11px] font-semibold bg-purple-100 text-purple-700 rounded-full">
+                    <?= e($total_aktivitas) ?> Aktivitas
+                </span>
             </div>
+
+            <?php if (empty($aktivitas_list)): ?>
+                <div class="flex flex-col items-center justify-center h-[260px] text-gray-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-9 w-9 text-gray-300 mb-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 00-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                    </svg>
+                    <p class="text-xs font-medium">Belum ada aktivitas baru</p>
+                </div>
+            <?php else: ?>
+                <div class="relative">
+                    <div class="absolute left-[21px] top-3 bottom-3 w-0.5 bg-slate-200"></div>
+                    <div class="space-y-1 h-[260px] overflow-y-auto pr-1 scroll-thin">
+                        <?php foreach ($aktivitas_list as $a):
+                            $c = colorAktivitas($a['jenis']);
+                            $i = iconAktivitas($a['jenis']);
+                            $roleName = !empty($a['role_user']) ? ucfirst($a['role_user']) : 'User';
+                        ?>
+                        <div class="group relative flex items-center gap-2.5 p-2 rounded-lg hover:bg-slate-50 transition-all duration-150 border border-transparent hover:border-gray-100">
+                            <div class="relative z-10 flex-shrink-0 w-7 h-7 rounded-lg bg-<?= $c ?>-50 text-<?= $c ?>-600 flex items-center justify-center ring-2 ring-white shadow-xs">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <?php if ($i === 'plus-circle'): ?>
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    <?php elseif ($i === 'pencil-square'): ?>
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/>
+                                    <?php elseif ($i === 'trash'): ?>
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/>
+                                    <?php elseif ($i === 'arrow-repeat'): ?>
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182"/>
+                                    <?php elseif ($i === 'arrow-right-on-rectangle'): ?>
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"/>
+                                    <?php elseif ($i === 'arrow-left-on-rectangle'): ?>
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0110.5 3h6a2.25 2.25 0 012.25 2.25v13.5A2.25 2.25 0 0116.5 21h-6a2.25 2.25 0 01-2.25-2.25V15m-3 0l-3-3m0 0l3-3m-3 3H15"/>
+                                    <?php else: ?>
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <?php endif; ?>
+                                </svg>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center justify-between gap-2">
+                                    <div class="flex items-center gap-1.5 truncate">
+                                        <span class="text-xs font-semibold text-gray-900 truncate"><?= e($a['nama_user']) ?></span>
+                                        <span class="text-[9px] font-medium px-1 py-0.2 rounded bg-slate-100 text-slate-500 uppercase tracking-wide border border-slate-200"><?= e($roleName) ?></span>
+                                    </div>
+                                    <span class="text-[10px] text-gray-400 flex-shrink-0 whitespace-nowrap"><?= timeAgo($a['created_at']) ?></span>
+                                </div>
+                                <p class="text-xs text-gray-600 truncate mt-0.5">
+                                    <?= e(str_ireplace('GitHub', 'server pusat', $a['aktivitas'])) ?>
+                                </p>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            <?php endif; ?>
         </div>
+    </div>
     </div>
 
 </main>

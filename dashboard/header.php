@@ -131,7 +131,7 @@ main { overflow-y: visible !important; }
 </nav>
 
 <div id="sidebarOverlay" class="fixed inset-0 z-20 bg-black/50 hidden md:hidden" onclick="toggleSidebar()"></div>
-<div class="flex flex-1 flex-col overflow-y-auto">
+<div class="flex flex-1 flex-col overflow-y-auto overflow-x-hidden min-w-0">
 
 <script>
 function updateClock() {
