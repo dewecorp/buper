@@ -63,9 +63,9 @@ main { overflow-y: visible !important; }
 .bg-emerald-600.text-white.px-4 { padding: 0.375rem 0.75rem !important; font-size: 0.813rem !important; }
 </style>
 </head>
-<body class="h-screen bg-gray-50 flex flex-col overflow-hidden">
+<body class="min-h-screen bg-gray-50 flex flex-col">
 <!-- Top Navbar -->
-<nav class="sticky top-0 z-50 bg-purple-900 text-white shadow-md px-5 py-2.5 flex items-center justify-between flex-shrink-0">
+<nav class="sticky top-0 z-50 h-14 bg-purple-900 text-white shadow-md px-5 flex items-center justify-between flex-shrink-0">
     <div class="flex items-center gap-2">
         <button onclick="toggleSidebar()" class="md:hidden p-1.5 text-purple-200 hover:text-white transition">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
@@ -131,7 +131,7 @@ main { overflow-y: visible !important; }
 </nav>
 
 <div id="sidebarOverlay" class="fixed inset-0 z-20 bg-black/50 hidden md:hidden" onclick="toggleSidebar()"></div>
-<div class="flex flex-1 flex-col overflow-y-auto overflow-x-hidden min-w-0">
+<div class="flex flex-1 flex-col min-w-0">
 
 <script>
 function updateClock() {

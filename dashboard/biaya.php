@@ -25,7 +25,7 @@ $kategoriColor = [
 ];
 $durasiLabel = ['hari' => 'Per Hari', 'paket' => 'Paket', 'event' => 'Flat'];
 ?>
-<main class="flex-1 p-6 bg-gray-100 overflow-y-auto">
+<main class="flex-1 p-6 bg-gray-100">
     <div class="flex justify-between items-center mb-6">
         <div>
             <h1 class="text-2xl font-semibold text-gray-800">Data Biaya Penggunaan</h1>
